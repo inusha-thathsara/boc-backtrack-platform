@@ -563,43 +563,65 @@ body {
   border-color: var(--primary);
 }
 
-/* Story Viewer Modal */
+/* Story Viewer Modal - Viewport Optimized */
 .story-viewer-modal {
   position: fixed;
   inset: 0;
-  background: #000;
-  z-index: 150;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  background: rgba(0, 0, 0, 0.94);
+  backdrop-filter: blur(20px);
+  z-index: 9999;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  user-select: none;
 }
 
 .story-viewer-frame {
   width: 100%;
-  max-width: 420px;
-  height: 94vh;
+  max-width: 440px;
+  height: min(92vh, 860px);
   position: relative;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
-  background: #111;
+  background: #000;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(255, 255, 255, 0.12);
+}
+
+@media (max-width: 480px) {
+  .story-viewer-frame {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: 100vw;
+    border-radius: 0;
+    box-shadow: none;
+  }
 }
 
 .story-progress-bar-container {
   position: absolute;
-  top: 12px;
-  left: 12px;
-  right: 12px;
+  top: 14px;
+  left: 14px;
+  right: 14px;
   display: flex;
-  gap: 4px;
-  z-index: 20;
+  gap: 5px;
+  z-index: 40;
 }
 
 .story-progress-bar-track {
   flex: 1;
   height: 3px;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.35);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -613,11 +635,156 @@ body {
 
 .story-viewer-header {
   position: absolute;
-  top: 24px;
-  left: 14px;
-  right: 14px;
+  top: 26px;
+  left: 16px;
+  right: 16px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  z-index: 20;
+  z-index: 40;
+}
+
+.story-close-btn {
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.story-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.08);
+}
+
+/* Full Uncropped Media Area */
+.story-media-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  overflow: hidden;
+}
+
+.story-ambient-backdrop {
+  position: absolute;
+  inset: -20px;
+  background-size: cover;
+  background-position: center;
+  filter: blur(40px) brightness(0.35);
+  transform: scale(1.2);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.story-media-wrapper {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.story-media-element {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Invisible Tap Zones for Mobile Navigation */
+.story-tap-zone-left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 35%;
+  z-index: 25;
+  cursor: pointer;
+}
+
+.story-tap-zone-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 65%;
+  z-index: 25;
+  cursor: pointer;
+}
+
+/* Desktop Arrow Controls */
+.story-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.2s ease;
+}
+
+.story-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.story-nav-prev {
+  left: calc(50% - 280px);
+}
+
+.story-nav-next {
+  right: calc(50% - 280px);
+}
+
+@media (max-width: 600px) {
+  .story-nav-btn {
+    display: none;
+  }
+}
+
+.story-ephemeral-banner {
+  position: absolute;
+  bottom: 18px;
+  left: 14px;
+  right: 14px;
+  background: rgba(10, 12, 16, 0.75);
+  backdrop-filter: blur(10px);
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.73rem;
+  color: #e2e8f0;
+  z-index: 30;
+  pointer-events: none;
 }

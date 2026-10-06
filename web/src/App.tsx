@@ -186,29 +186,29 @@ export function App() {
             />
           ))}
         </div>
-
-        {/* Modals */}
-        {activeStoryGroup && (
-          <StoryViewerModal group={activeStoryGroup} onClose={() => setActiveStoryGroup(null)} />
-        )}
-
-        {isUploadOpen && (
-          <UploadModal
-            currentUser={currentUser}
-            initialType={uploadInitialType}
-            onClose={() => setIsUploadOpen(false)}
-            onSuccess={() => loadData(currentUser.id)}
-          />
-        )}
-
-        {isDMsOpen && (
-          <DirectMessagesModal
-            currentUser={currentUser}
-            users={users}
-            onClose={() => setIsDMsOpen(false)}
-          />
-        )}
       </div>
+
+      {/* Modals rendered outside main-feed-column to escape containing blocks */}
+      {activeStoryGroup && (
+        <StoryViewerModal group={activeStoryGroup} onClose={() => setActiveStoryGroup(null)} />
+      )}
+
+      {isUploadOpen && (
+        <UploadModal
+          currentUser={currentUser}
+          initialType={uploadInitialType}
+          onClose={() => setIsUploadOpen(false)}
+          onSuccess={() => loadData(currentUser.id)}
+        />
+      )}
+
+      {isDMsOpen && (
+        <DirectMessagesModal
+          currentUser={currentUser}
+          users={users}
+          onClose={() => setIsDMsOpen(false)}
+        />
+      )}
     </div>
   );
 }
