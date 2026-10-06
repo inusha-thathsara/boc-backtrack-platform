@@ -1,4 +1,9 @@
-# BackTrack Cloud Social Platform — BOC 2.0 MVP
+<p align="center">
+  <img src="./logo.png" alt="Team BackTrack Logo" width="160" style="border-radius: 20px;"/>
+</p>
+
+<h1 align="center">BackTrack Cloud Social Platform</h1>
+<p align="center"><strong>BOC 2.0 Scenario 2 — Cloud-Native Social Media Platform MVP</strong></p>
 
 This repository contains the working cloud-native MVP implementation for **Team BackTrack's** submission in **Beauty of Cloud 2.0 (BOC 2.0) — Scenario 2: Photo & Video Social Platform**.
 

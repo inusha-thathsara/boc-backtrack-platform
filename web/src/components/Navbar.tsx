@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../services/api';
-import { PlusSquare, Send, Zap, ChevronDown } from 'lucide-react';
+import { PlusSquare, Send, ChevronDown } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User;
@@ -22,9 +22,11 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="navbar">
       <div className="brand-badge">
-        <div className="brand-logo-icon">
-          <Zap size={18} />
-        </div>
+        <img
+          src="/logo.png"
+          alt="Team BackTrack Logo"
+          className="brand-logo-img"
+        />
         <div>
           <span className="brand-title">BackTrack</span>
           <span style={{ fontSize: '0.62rem', color: '#6366f1', display: 'block', fontWeight: 600 }}>

@@ -79,7 +79,7 @@ const memoryUsers: Map<string, User> = new Map([
       id: 'u3',
       username: 'backtrack.official',
       displayName: 'Team BackTrack',
-      avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=150',
+      avatarUrl: '/logo.png',
       followerCount: 850000,
       followingCount: 50,
       isCelebrity: true,
@@ -165,7 +165,7 @@ const memoryStories: Map<string, Story> = new Map([
     {
       id: 's2',
       authorId: 'u3',
-      mediaUrl: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800',
+      mediaUrl: '/logo.png',
       mediaType: 'image',
       createdAt: Date.now() - 1000 * 60 * 60 * 1, // 1 hour ago
       expiresAt: Date.now() + 1000 * 60 * 60 * 23, // Expires in 23 hours

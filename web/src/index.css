@@ -100,6 +100,20 @@ body {
   box-shadow: 0 4px 14px var(--primary-glow);
 }
 
+.brand-logo-img {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.brand-badge:hover .brand-logo-img {
+  transform: scale(1.08);
+}
+
 .brand-title {
   font-family: var(--font-heading);
   font-weight: 800;
