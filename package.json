@@ -1,0 +1,12 @@
+{
+  "name": "boc-backtrack-platform",
+  "version": "1.0.0",
+  "description": "Team BackTrack - BOC 2.0 Scenario 2 GCP Social Platform MVP",
+  "scripts": {
+    "install:all": "npm --prefix services/feed-api install && npm --prefix services/media-worker install && npm --prefix services/websocket-gateway install && npm --prefix web install",
+    "dev:api": "npm --prefix services/feed-api run dev",
+    "dev:ws": "npm --prefix services/websocket-gateway run dev",
+    "dev:worker": "npm --prefix services/media-worker run dev",
+    "dev:web": "npm --prefix web run dev"
+  }
+}

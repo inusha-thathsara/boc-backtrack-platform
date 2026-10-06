@@ -1,0 +1,33 @@
+{
+  "rule": [
+    {
+      "action": {
+        "type": "Delete"
+      },
+      "condition": {
+        "age": 1,
+        "matchesPrefix": ["stories/"]
+      }
+    },
+    {
+      "action": {
+        "type": "SetStorageClass",
+        "storageClass": "NEARLINE"
+      },
+      "condition": {
+        "age": 30,
+        "matchesPrefix": ["posts/"]
+      }
+    },
+    {
+      "action": {
+        "type": "SetStorageClass",
+        "storageClass": "ARCHIVE"
+      },
+      "condition": {
+        "age": 180,
+        "matchesPrefix": ["posts/"]
+      }
+    }
+  ]
+}

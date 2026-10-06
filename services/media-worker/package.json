@@ -1,0 +1,24 @@
+{
+  "name": "media-worker",
+  "version": "1.0.0",
+  "description": "BOC 2.0 Scenario 2 FFmpeg HLS Transcoding & Content Moderation Worker",
+  "main": "dist/worker.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/worker.js",
+    "dev": "tsx watch src/worker.ts"
+  },
+  "dependencies": {
+    "@google-cloud/firestore": "^7.11.0",
+    "@google-cloud/storage": "^7.15.0",
+    "@google-cloud/vision": "^4.3.2",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  }
+}
