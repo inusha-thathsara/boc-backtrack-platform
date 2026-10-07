@@ -28,6 +28,17 @@ export function App() {
   const [isDMsOpen, setIsDMsOpen] = useState(false);
   const [unreadDMs, setUnreadDMs] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDevMode, setIsDevMode] = useState<boolean>(() => {
+    return localStorage.getItem('backtrack_dev_mode') === 'true';
+  });
+
+  const handleToggleDevMode = () => {
+    setIsDevMode(prev => {
+      const next = !prev;
+      localStorage.setItem('backtrack_dev_mode', String(next));
+      return next;
+    });
+  };
 
   // Load initial data
   const loadData = useCallback(async (viewerId: string) => {
@@ -123,6 +134,8 @@ export function App() {
             setUnreadDMs(0);
           }}
           unreadCount={unreadDMs}
+          isDevMode={isDevMode}
+          onToggleDevMode={handleToggleDevMode}
         />
 
         {/* Stories Tray with 24h Expiration */}
@@ -133,36 +146,38 @@ export function App() {
           onAddStoryClick={handleAddStory}
         />
 
-        {/* Architecture System Telemetry Pill */}
-        <div
-          style={{
-            margin: '10px 14px 4px',
-            padding: '8px 12px',
-            borderRadius: '12px',
-            background: 'rgba(99, 102, 241, 0.08)',
-            border: '1px solid rgba(99, 102, 241, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            fontSize: '0.72rem',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Cloud size={14} color="#6366f1" />
-            <span style={{ color: '#cbd5e1' }}>
-              <strong>GCP Cluster:</strong> Cloud Run • Memorystore • GCS Signed URLs
-            </span>
+        {/* Architecture System Telemetry Pill (Developer / Judge Mode Only) */}
+        {isDevMode && (
+          <div
+            style={{
+              margin: '10px 14px 4px',
+              padding: '8px 12px',
+              borderRadius: '12px',
+              background: 'rgba(99, 102, 241, 0.08)',
+              border: '1px solid rgba(99, 102, 241, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              fontSize: '0.72rem',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <Cloud size={14} color="#6366f1" />
+              <span style={{ color: '#cbd5e1' }}>
+                <strong>GCP Cluster:</strong> Cloud Run • Memorystore • GCS Signed URLs
+              </span>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
+              <Radio size={12} className="animate-pulse" />
+              <span>Redis WS Active</span>
+            </div>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
-            <Radio size={12} className="animate-pulse" />
-            <span>Redis WS Active</span>
-          </div>
-        </div>
+        )}
 
         {/* Posts Feed Header */}
         <div style={{ padding: '8px 16px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.04em' }}>
-            ALGORITHMIC TIMELINE FEED
+            {isDevMode ? 'ALGORITHMIC TIMELINE FEED' : 'FOR YOU'}
           </span>
           <button
             onClick={() => loadData(currentUser.id)}
@@ -190,6 +205,7 @@ export function App() {
               post={post}
               currentUserId={currentUser.id}
               onLikeOptimistic={handleLikeOptimistic}
+              isDevMode={isDevMode}
             />
           ))}
         </div>

@@ -7,9 +7,15 @@ interface PostCardProps {
   post: Post;
   currentUserId: string;
   onLikeOptimistic: (postId: string, newCount: number) => void;
+  isDevMode?: boolean;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onLikeOptimistic }) => {
+export const PostCard: React.FC<PostCardProps> = ({
+  post,
+  currentUserId,
+  onLikeOptimistic,
+  isDevMode = false,
+}) => {
   const [isLiked, setIsLiked] = useState(false);
   const [showRankingDetails, setShowRankingDetails] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -111,15 +117,21 @@ export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onLikeO
           <button className={`action-btn ${isLiked ? 'liked' : ''}`} onClick={handleLike}>
             <Heart size={22} fill={isLiked ? '#f43f5e' : 'none'} />
           </button>
-          <button className="action-btn" onClick={toggleComments}>
+          <button className="action-btn" onClick={toggleComments} title="View comments">
             <MessageCircle size={22} />
           </button>
-          <button className="action-btn" onClick={() => setShowRankingDetails(!showRankingDetails)}>
-            <Cpu size={20} color="#818cf8" />
-          </button>
+          {isDevMode && (
+            <button
+              className="action-btn"
+              onClick={() => setShowRankingDetails(!showRankingDetails)}
+              title="Inspect Algorithmic Rank Score"
+            >
+              <Cpu size={20} color="#818cf8" />
+            </button>
+          )}
         </div>
 
-        <button className="action-btn">
+        <button className="action-btn" title="Share post">
           <Send size={20} />
         </button>
       </div>
@@ -128,9 +140,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onLikeO
       <div className="post-details">
         <div className="likes-counter">
           <span>{post.likeCount.toLocaleString()} likes</span>
-          <span className="badge-redis-tag" title="Incremented via atomic Redis INCR and flushed every 5s">
-            Redis INCR
-          </span>
+          {isDevMode && (
+            <span className="badge-redis-tag" title="Incremented via atomic Redis INCR and flushed every 5s">
+              Redis INCR
+            </span>
+          )}
         </div>
 
         <p className="post-caption">
@@ -138,34 +152,36 @@ export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onLikeO
           {post.caption}
         </p>
 
-        {/* Algorithmic Ranking Formula Inspector */}
-        <div className="ranking-inspect-chip">
-          <div
-            className="ranking-chip-header"
-            onClick={() => setShowRankingDetails(!showRankingDetails)}
-            style={{ cursor: 'pointer' }}
-          >
-            <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <Cpu size={14} />
-              Algorithmic Rank Score: <strong>{post.score ?? 'Calculated'}</strong>
-            </span>
-            {showRankingDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </div>
-
-          {showRankingDetails && post.rankingFactors && (
-            <div style={{ marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px' }}>
-              <div className="ranking-stats">
-                <span>Likes: {post.rankingFactors.likes}</span>
-                <span>Comments: {post.rankingFactors.comments}</span>
-                <span>Age: {post.rankingFactors.hoursElapsed}h</span>
-                <span>Affinity: +{post.rankingFactors.affinityBonus}</span>
-              </div>
-              <p style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
-                Formula: (Likes×1.0 + Comments×2.5 + Affinity) / (Age + 2)^1.5
-              </p>
+        {/* Algorithmic Ranking Formula Inspector (Developer / Judge Mode Only) */}
+        {isDevMode && (
+          <div className="ranking-inspect-chip">
+            <div
+              className="ranking-chip-header"
+              onClick={() => setShowRankingDetails(!showRankingDetails)}
+              style={{ cursor: 'pointer' }}
+            >
+              <span style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <Cpu size={14} />
+                Algorithmic Rank Score: <strong>{post.score ?? 'Calculated'}</strong>
+              </span>
+              {showRankingDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </div>
-          )}
-        </div>
+
+            {showRankingDetails && post.rankingFactors && (
+              <div style={{ marginTop: '6px', borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '6px' }}>
+                <div className="ranking-stats">
+                  <span>Likes: {post.rankingFactors.likes}</span>
+                  <span>Comments: {post.rankingFactors.comments}</span>
+                  <span>Age: {post.rankingFactors.hoursElapsed}h</span>
+                  <span>Affinity: +{post.rankingFactors.affinityBonus}</span>
+                </div>
+                <p style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
+                  Formula: (Likes×1.0 + Comments×2.5 + Affinity) / (Age + 2)^1.5
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Comments Section */}
         {showComments && (

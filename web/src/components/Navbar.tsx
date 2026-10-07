@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../services/api';
-import { PlusSquare, Send, ChevronDown } from 'lucide-react';
+import { PlusSquare, Send, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User;
@@ -9,6 +9,8 @@ interface NavbarProps {
   onOpenUpload: () => void;
   onOpenDMs: () => void;
   unreadCount: number;
+  isDevMode: boolean;
+  onToggleDevMode: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenUpload,
   onOpenDMs,
   unreadCount,
+  isDevMode,
+  onToggleDevMode,
 }) => {
   return (
     <header className="navbar">
@@ -30,7 +34,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div>
           <span className="brand-title">BackTrack</span>
           <span style={{ fontSize: '0.62rem', color: '#6366f1', display: 'block', fontWeight: 600 }}>
-            BOC 2.0 CLOUD MVP
+            {isDevMode ? 'DEV INSPECTOR ON' : 'CLOUD PLATFORM'}
           </span>
         </div>
       </div>
@@ -75,6 +79,23 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
           />
         </div>
+
+        {/* Algorithm / Developer Inspector Toggle */}
+        <button
+          className="btn-icon"
+          onClick={onToggleDevMode}
+          title={isDevMode ? 'Disable Algorithm Inspector' : 'Enable Judge / Developer Algorithm Inspector'}
+          style={{
+            color: isDevMode ? '#818cf8' : '#64748b',
+            background: isDevMode ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+            borderRadius: '10px',
+            padding: '6px',
+            border: isDevMode ? '1px solid rgba(99, 102, 241, 0.35)' : '1px solid transparent',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          <SlidersHorizontal size={17} />
+        </button>
 
         {/* Upload Action */}
         <button className="btn-icon" onClick={onOpenUpload} title="Upload Post or Story">
