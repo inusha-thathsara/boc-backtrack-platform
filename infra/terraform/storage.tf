@@ -55,9 +55,9 @@ resource "google_storage_bucket" "processed_media" {
       type = "Delete"
     }
     condition {
-      age                   = 1 # 1 day / 24 hours
-      matches_prefix        = ["stories/"]
-      with_state            = "ANY"
+      age            = 1 # 1 day / 24 hours
+      matches_prefix = ["stories/"]
+      with_state     = "ANY"
     }
   }
 

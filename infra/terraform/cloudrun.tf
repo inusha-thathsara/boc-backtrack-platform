@@ -99,9 +99,9 @@ resource "google_cloud_run_service" "websocket_gateway" {
 
     metadata {
       annotations = {
-        "autoscaling.knative.dev/minScale"        = "0"
-        "autoscaling.knative.dev/maxScale"        = "5"
-        "run.googleapis.com/sessionAffinity"      = "true"
+        "autoscaling.knative.dev/minScale"   = "0"
+        "autoscaling.knative.dev/maxScale"   = "5"
+        "run.googleapis.com/sessionAffinity" = "true"
       }
     }
   }
