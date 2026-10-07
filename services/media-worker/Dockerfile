@@ -19,5 +19,7 @@ COPY package*.json ./
 RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
 
+USER node
 EXPOSE 8082
 CMD ["node", "dist/worker.js"]
+

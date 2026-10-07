@@ -23,3 +23,23 @@ wss.on('connection', ws => {
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`⚡ WebSocket Gateway Service listening on ws://0.0.0.0:${PORT}`);
 });
+
+const gracefulShutdown = (signal: string) => {
+  console.log(`[WebSocket Gateway] Received ${signal}, starting graceful shutdown...`);
+  socketManager.close();
+  wss.close(() => {
+    server.close(() => {
+      console.log('[WebSocket Gateway] HTTP & WebSocket servers closed.');
+      process.exit(0);
+    });
+  });
+  // Force exit after 10s if connections remain stuck
+  setTimeout(() => {
+    console.error('[WebSocket Gateway] Force exit timeout reached.');
+    process.exit(1);
+  }, 10000).unref();
+};
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+

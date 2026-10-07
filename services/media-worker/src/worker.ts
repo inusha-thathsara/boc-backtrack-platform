@@ -28,6 +28,7 @@ app.get('/health', (_req, res) => {
  */
 app.post('/api/process-media', async (req, res): Promise<void> => {
   const startTime = Date.now();
+  let tempDir: string | null = null;
   try {
     // Support Eventarc GCS object format or direct invocation
     const bucketName = req.body.bucket || req.headers['ce-bucket'] || `boc-raw-media-${PROJECT_ID}`;
@@ -41,7 +42,7 @@ app.post('/api/process-media', async (req, res): Promise<void> => {
       return;
     }
 
-    const tempDir = path.join(os.tmpdir(), `transcode_${Date.now()}`);
+    tempDir = path.join(os.tmpdir(), `transcode_${Date.now()}`);
     const isVideo = fileId.endsWith('.mp4') || fileId.endsWith('.mov') || fileId.includes('video');
 
     // 1. Content Moderation
@@ -99,6 +100,16 @@ app.post('/api/process-media', async (req, res): Promise<void> => {
   } catch (error: any) {
     console.error('[Worker] Transcoding failure:', error);
     res.status(500).json({ error: error.message });
+  } finally {
+    // Purge temp transcoding folder to reclaim Cloud Run ephemeral container memory/disk
+    try {
+      if (tempDir) {
+        const fs = await import('fs');
+        if (fs.existsSync(tempDir)) {
+          fs.rmSync(tempDir, { recursive: true, force: true });
+        }
+      }
+    } catch {}
   }
 });
 

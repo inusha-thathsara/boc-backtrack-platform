@@ -11,6 +11,7 @@ class PubSubManager extends EventEmitter {
 
   constructor() {
     super();
+    this.setMaxListeners(0); // Unlimited listeners for production pub/sub channels
     try {
       this.publisher = new Redis({
         host: REDIS_HOST,

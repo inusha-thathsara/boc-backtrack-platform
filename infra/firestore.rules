@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    // User Profiles
+    match /users/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId);
+      allow delete: if false; // Soft deletes only in production
+    }
+
+    // Timeline Posts
+    match /posts/{postId} {
+      allow read: if resource.data.status != 'FLAGGED' || isOwner(resource.data.authorId);
+      allow create: if isAuthenticated() && request.resource.data.authorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        // Allow author to update content
+        isOwner(resource.data.authorId) ||
+        // Allow any authenticated user to increment/decrement like count
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount', 'likes'])
+      );
+      allow delete: if isOwner(resource.data.authorId);
+    }
+
+    // 24h Expiring Stories
+    match /stories/{storyId} {
+      // Only serve active stories within 24h window
+      allow read: if resource.data.expiresAt > request.time.toMillis();
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow delete: if isOwner(resource.data.creatorId);
+    }
+
+    // Direct Messages (End-to-End User Privacy)
+    match /direct_messages/{dmId} {
+      allow read: if isAuthenticated() && (
+        request.auth.uid == resource.data.senderId ||
+        request.auth.uid == resource.data.recipientId
+      );
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update, delete: if false; // Immutable audit log
+    }
+  }
+}

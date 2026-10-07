@@ -1,13 +1,20 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { api, User, Post, CreatorStoryGroup } from './services/api';
 import { socket } from './services/socket';
 import { Navbar } from './components/Navbar';
 import { StoriesTray } from './components/StoriesTray';
 import { PostCard } from './components/PostCard';
-import { StoryViewerModal } from './components/StoryViewerModal';
-import { UploadModal } from './components/UploadModal';
-import { DirectMessagesModal } from './components/DirectMessagesModal';
 import { Cloud, Radio, Activity, RefreshCw } from 'lucide-react';
+
+const StoryViewerModal = lazy(() =>
+  import('./components/StoryViewerModal').then(m => ({ default: m.StoryViewerModal }))
+);
+const UploadModal = lazy(() =>
+  import('./components/UploadModal').then(m => ({ default: m.UploadModal }))
+);
+const DirectMessagesModal = lazy(() =>
+  import('./components/DirectMessagesModal').then(m => ({ default: m.DirectMessagesModal }))
+);
 
 export function App() {
   const [users, setUsers] = useState<User[]>([]);
@@ -189,26 +196,28 @@ export function App() {
       </div>
 
       {/* Modals rendered outside main-feed-column to escape containing blocks */}
-      {activeStoryGroup && (
-        <StoryViewerModal group={activeStoryGroup} onClose={() => setActiveStoryGroup(null)} />
-      )}
+      <Suspense fallback={null}>
+        {activeStoryGroup && (
+          <StoryViewerModal group={activeStoryGroup} onClose={() => setActiveStoryGroup(null)} />
+        )}
 
-      {isUploadOpen && (
-        <UploadModal
-          currentUser={currentUser}
-          initialType={uploadInitialType}
-          onClose={() => setIsUploadOpen(false)}
-          onSuccess={() => loadData(currentUser.id)}
-        />
-      )}
+        {isUploadOpen && (
+          <UploadModal
+            currentUser={currentUser}
+            initialType={uploadInitialType}
+            onClose={() => setIsUploadOpen(false)}
+            onSuccess={() => loadData(currentUser.id)}
+          />
+        )}
 
-      {isDMsOpen && (
-        <DirectMessagesModal
-          currentUser={currentUser}
-          users={users}
-          onClose={() => setIsDMsOpen(false)}
-        />
-      )}
+        {isDMsOpen && (
+          <DirectMessagesModal
+            currentUser={currentUser}
+            users={users}
+            onClose={() => setIsDMsOpen(false)}
+          />
+        )}
+      </Suspense>
     </div>
   );
 }

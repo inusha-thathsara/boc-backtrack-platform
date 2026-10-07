@@ -1,8 +1,8 @@
-import vision from '@google-cloud/vision';
+import { ImageAnnotatorClient } from '@google-cloud/vision';
 
-let visionClient: vision.ImageAnnotatorClient | null = null;
+let visionClient: ImageAnnotatorClient | null = null;
 try {
-  visionClient = new vision.ImageAnnotatorClient();
+  visionClient = new ImageAnnotatorClient();
 } catch {
   visionClient = null;
 }
