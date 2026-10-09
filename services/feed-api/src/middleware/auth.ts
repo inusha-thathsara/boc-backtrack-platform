@@ -53,9 +53,20 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
 
   // 2. Demo / Local Dev fallback identity
   if (devUserId) {
+    const userMap: Record<string, string> = {
+      u1: 'inusha.tech',
+      u2: 'madhura.cloud',
+      u3: 'backtrack.official',
+      u4: 'alex.creator',
+      u_walle: 'walle.solar',
+      u_eve: 'eve.probe',
+      u_mo: 'mo.cleaner',
+      u_captain: 'captain.mccrea',
+      u_bnl: 'bnl.corp',
+    };
     req.user = {
       uid: devUserId,
-      username: devUserId === 'u1' ? 'inusha.tech' : devUserId === 'u2' ? 'madhura.cloud' : 'backtrack.official',
+      username: userMap[devUserId] || devUserId,
     };
     next();
     return;

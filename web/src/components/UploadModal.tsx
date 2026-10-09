@@ -475,7 +475,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
               </label>
               <textarea
                 rows={2}
-                placeholder="Share your thoughts or hashtag (e.g. #CloudRun, #BackTrack)..."
+                placeholder="Share your thoughts or hashtag (e.g. #PlantDiscovered, #WALL_E, #Axiom, #CloudRun)..."
                 value={caption}
                 onChange={e => setCaption(e.target.value)}
                 style={{
