@@ -1,15 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { CreatorStoryGroup } from '../services/api';
-import { X, Clock, Flame, ChevronLeft, ChevronRight, Timer } from 'lucide-react';
+import { X, Clock, ChevronLeft, ChevronRight, Timer } from 'lucide-react';
 
 interface StoryViewerModalProps {
   group: CreatorStoryGroup;
   onClose: () => void;
-  isDevMode?: boolean;
 }
 
-export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClose, isDevMode = false }) => {
+export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -128,15 +127,6 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
     if (diffMins < 60) return `${diffMins}m ago`;
     const diffHours = Math.floor(diffMins / 60);
     return `${diffHours}h ago`;
-  };
-
-  const formatExactTime = (timestamp: number) => {
-    try {
-      const d = new Date(timestamp);
-      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    } catch {
-      return '';
-    }
   };
 
   const modalContent = (
@@ -258,25 +248,6 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
           {/* Interactive Tap Zones (Invisible) */}
           <div className="story-tap-zone-left" onClick={handlePrev} />
           <div className="story-tap-zone-right" onClick={handleNext} />
-
-          {/* Ephemeral Notice Banner with Exact Purge Timestamps */}
-          <div className="story-ephemeral-banner">
-            <Flame size={15} color="#f97316" className="banner-flame-icon" />
-            <div className="story-ephemeral-details">
-              <span className="ephemeral-title-line">
-                <strong>Ephemeral Story (24h Lifecycle):</strong> Purges at{' '}
-                <strong>{formatExactTime(currentStory.expiresAt)}</strong> ({timeLeft.formatted} remaining).
-              </span>
-              <span className="ephemeral-desc-line">
-                Google Cloud Storage native lifecycle rule automatically purges object after 1 day.
-              </span>
-              {isDevMode && (
-                <div className="story-dev-meta">
-                  Server expiresAt: <code>{currentStory.expiresAt}</code> (UTC epoch ms) • GCS Prefix: <code>stories/</code>
-                </div>
-              )}
-            </div>
-          </div>
         </div>
       </div>
 

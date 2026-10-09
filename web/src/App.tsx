@@ -271,7 +271,6 @@ export function App() {
           <StoryViewerModal
             group={activeStoryGroup}
             onClose={() => setActiveStoryGroup(null)}
-            isDevMode={isDevMode}
           />
         )}
 
