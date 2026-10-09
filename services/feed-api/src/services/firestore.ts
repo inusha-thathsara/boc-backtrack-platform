@@ -132,6 +132,21 @@ const memoryUsers: Map<string, User> = new Map([
 
 const memoryPosts: Map<string, Post> = new Map([
   [
+    'p_inusha_coursework',
+    {
+      id: 'p_inusha_coursework',
+      authorId: 'u1',
+      caption: 'CourseWork',
+      mediaType: 'image',
+      mediaUrl: '/media/uploads/1791563061372_20260127_101556.jpg.jpeg',
+      thumbnailUrl: '/media/uploads/1791563061372_20260127_101556.jpg.jpeg',
+      status: 'READY',
+      likeCount: 0,
+      commentCount: 0,
+      createdAt: Date.now() - 1000 * 60 * 2, // 2 mins ago
+    },
+  ],
+  [
     'p1',
     {
       id: 'p1',
@@ -399,6 +414,7 @@ const memoryComments: Map<string, Comment[]> = new Map([
 
 // Single-user like tracker (Maps postId -> Set of userIds who liked the post)
 const memoryPostLikes: Map<string, Set<string>> = new Map([
+  ['p_inusha_coursework', new Set([])],
   ['p1', new Set(['u2', 'u3'])],
   ['p_walle_sprout', new Set(['u1', 'u2', 'u3', 'u4'])],
   ['p2', new Set(['u3'])],
@@ -413,52 +429,67 @@ const memoryPostLikes: Map<string, Set<string>> = new Map([
   ['p7', new Set(['u1'])],
 ]);
 
+let firestoreAvailable = true;
+
 export class DataService {
   static async getUsers(): Promise<User[]> {
-    if (db) {
+    if (db && firestoreAvailable) {
       try {
         const snap = await db.collection('users').get();
         if (!snap.empty) {
           return snap.docs.map(d => ({ id: d.id, ...d.data() } as User));
         }
-      } catch (err) {
-        console.warn('Firestore fetch failed, returning in-memory:', err);
+      } catch (err: any) {
+        if (err?.code === 7 || err?.message?.includes('PERMISSION_DENIED')) {
+          firestoreAvailable = false;
+        }
+        console.warn('Firestore fetch failed, returning in-memory:', err?.message || err);
       }
     }
     return Array.from(memoryUsers.values());
   }
 
   static async getUser(userId: string): Promise<User | undefined> {
-    if (db) {
+    if (db && firestoreAvailable) {
       try {
         const doc = await db.collection('users').doc(userId).get();
         if (doc.exists) return { id: doc.id, ...doc.data() } as User;
-      } catch {}
+      } catch (err: any) {
+        if (err?.code === 7 || err?.message?.includes('PERMISSION_DENIED')) {
+          firestoreAvailable = false;
+        }
+      }
     }
     return memoryUsers.get(userId);
   }
 
   static async getPosts(): Promise<Post[]> {
     let posts: Post[] = [];
-    if (db) {
+    if (db && firestoreAvailable) {
       try {
         const snap = await db.collection('posts').orderBy('createdAt', 'desc').limit(50).get();
         if (!snap.empty) {
           posts = snap.docs.map(d => ({ id: d.id, ...d.data() } as Post));
         }
-      } catch (err) {
-        console.warn('Firestore fetch failed, using memory:', err);
+      } catch (err: any) {
+        if (err?.code === 7 || err?.message?.includes('PERMISSION_DENIED')) {
+          firestoreAvailable = false;
+        }
       }
     }
     if (posts.length === 0) {
       posts = Array.from(memoryPosts.values());
     }
-    // Populate authors and heal any broken blob: URLs
+    // Populate authors and heal any broken blob: URLs or relative upload paths
     for (const post of posts) {
       post.author = await this.getUser(post.authorId);
       if (post.mediaUrl && post.mediaUrl.startsWith('blob:')) {
         post.mediaUrl = '/media/walle_treasure.jpg';
         post.thumbnailUrl = '/media/walle_treasure.jpg';
+      }
+      if (process.env.K_SERVICE && post.mediaUrl && post.mediaUrl.startsWith('/media/uploads/')) {
+        post.mediaUrl = `https://feed-api-894866134623.us-central1.run.app${post.mediaUrl}`;
+        post.thumbnailUrl = post.mediaUrl;
       }
     }
     return posts;
@@ -475,6 +506,10 @@ export class DataService {
             post.mediaUrl = '/media/walle_treasure.jpg';
             post.thumbnailUrl = '/media/walle_treasure.jpg';
           }
+          if (process.env.K_SERVICE && post.mediaUrl && post.mediaUrl.startsWith('/media/uploads/')) {
+            post.mediaUrl = `https://feed-api-894866134623.us-central1.run.app${post.mediaUrl}`;
+            post.thumbnailUrl = post.mediaUrl;
+          }
           return post;
         }
       } catch {}
@@ -486,6 +521,10 @@ export class DataService {
         p.mediaUrl = '/media/walle_treasure.jpg';
         p.thumbnailUrl = '/media/walle_treasure.jpg';
       }
+      if (process.env.K_SERVICE && p.mediaUrl && p.mediaUrl.startsWith('/media/uploads/')) {
+        p.mediaUrl = `https://feed-api-894866134623.us-central1.run.app${p.mediaUrl}`;
+        p.thumbnailUrl = p.mediaUrl;
+      }
       return p;
     }
     return undefined;
@@ -493,9 +532,13 @@ export class DataService {
 
   static async createPost(post: Omit<Post, 'id' | 'createdAt' | 'likeCount' | 'commentCount'>): Promise<Post> {
     // Guard against client-revoked blob: URLs
-    const safeMediaUrl = post.mediaUrl && post.mediaUrl.startsWith('blob:')
+    let safeMediaUrl = post.mediaUrl && post.mediaUrl.startsWith('blob:')
       ? (post.rawUrl && !post.rawUrl.startsWith('blob:') ? post.rawUrl : '/media/walle_treasure.jpg')
       : post.mediaUrl;
+
+    if (process.env.K_SERVICE && safeMediaUrl && safeMediaUrl.startsWith('/media/uploads/')) {
+      safeMediaUrl = `https://feed-api-894866134623.us-central1.run.app${safeMediaUrl}`;
+    }
 
     const newPost: Post = {
       ...post,

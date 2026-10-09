@@ -57,7 +57,22 @@ export interface CreatorStoryGroup {
   stories: Story[];
 }
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || '/api';
+export const API_BASE = (import.meta as any).env?.VITE_API_BASE || '/api';
+
+export function resolveMediaUrl(url: string | undefined): string {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+    return url;
+  }
+  if (url.startsWith('/media/uploads/')) {
+    if (API_BASE.startsWith('http://') || API_BASE.startsWith('https://')) {
+      const apiHost = API_BASE.replace(/\/api\/?$/, '');
+      return `${apiHost}${url}`;
+    }
+    return url;
+  }
+  return url;
+}
 
 export const api = {
   async getUsers(): Promise<User[]> {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Post, api } from '../services/api';
+import { Post, api, resolveMediaUrl } from '../services/api';
 import { VideoPlayer } from './VideoPlayer';
 import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 
@@ -141,20 +141,23 @@ export const PostCard: React.FC<PostCardProps> = ({
 
       {/* Media Frame */}
       {post.mediaType === 'video' ? (
-        <VideoPlayer hlsUrl={post.hlsUrl} fallbackUrl={post.mediaUrl} />
+        <VideoPlayer hlsUrl={post.hlsUrl} fallbackUrl={resolveMediaUrl(post.mediaUrl)} />
       ) : (
         <div className="post-media-frame">
           <img
-            src={post.mediaUrl}
+            src={resolveMediaUrl(post.mediaUrl)}
             alt={post.caption}
             className="post-media-img"
             loading="lazy"
             onError={(e) => {
               const target = e.currentTarget;
-              if (target.src !== '/media/walle_treasure.jpg') {
-                target.src = post.thumbnailUrl && !post.thumbnailUrl.startsWith('blob:')
-                  ? post.thumbnailUrl
-                  : '/media/walle_treasure.jpg';
+              if (!target.dataset.hasFailed) {
+                target.dataset.hasFailed = 'true';
+                if (post.thumbnailUrl && post.thumbnailUrl !== post.mediaUrl) {
+                  target.src = resolveMediaUrl(post.thumbnailUrl);
+                } else {
+                  target.src = '/media/walle_treasure.jpg';
+                }
               }
             }}
           />

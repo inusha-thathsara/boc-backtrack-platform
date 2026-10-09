@@ -50,6 +50,9 @@ export class FeedRankingEngine {
     // Signal A: Author's Own Post (Strongest Personalization: user sees their own creations at top of their profile/feed)
     if (post.authorId === viewerUser.id) {
       affinityBonus += 650;
+      if (hoursElapsed < 1) {
+        affinityBonus += 400; // Fresh creation boost so newly published posts immediately lead the feed
+      }
       isOwnPost = true;
       personalizationReason = 'Your Post';
     }
