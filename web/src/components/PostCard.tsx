@@ -144,7 +144,20 @@ export const PostCard: React.FC<PostCardProps> = ({
         <VideoPlayer hlsUrl={post.hlsUrl} fallbackUrl={post.mediaUrl} />
       ) : (
         <div className="post-media-frame">
-          <img src={post.mediaUrl} alt={post.caption} className="post-media-img" loading="lazy" />
+          <img
+            src={post.mediaUrl}
+            alt={post.caption}
+            className="post-media-img"
+            loading="lazy"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (target.src !== '/media/walle_treasure.jpg') {
+                target.src = post.thumbnailUrl && !post.thumbnailUrl.startsWith('blob:')
+                  ? post.thumbnailUrl
+                  : '/media/walle_treasure.jpg';
+              }
+            }}
+          />
         </div>
       )}
 

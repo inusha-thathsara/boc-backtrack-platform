@@ -5,9 +5,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const PROJECT_ID = process.env.GCP_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || 'living-blueprint-agent-app';
-export const RAW_BUCKET_NAME = process.env.RAW_BUCKET_NAME || `boc-raw-media-${PROJECT_ID}`;
-export const PROCESSED_BUCKET_NAME = process.env.PROCESSED_BUCKET_NAME || `boc-processed-media-${PROJECT_ID}`;
+export const PROJECT_ID = process.env.GCP_PROJECT_ID || process.env.GOOGLE_CLOUD_PROJECT || 'boc-backtrack-platform';
+export const RAW_BUCKET_NAME = 'boc-raw-media-boc-backtrack-platform';
+export const PROCESSED_BUCKET_NAME = 'boc-processed-media-boc-backtrack-platform';
 export const REDIS_HOST = process.env.REDIS_HOST || '127.0.0.1';
 export const REDIS_PORT = parseInt(process.env.REDIS_PORT || '6379', 10);
 export const PORT = parseInt(process.env.PORT || '8080', 10);

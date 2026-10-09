@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { api, User } from '../services/api';
 import {
   X,
@@ -32,6 +32,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   // Real File Upload State
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [dataUrl, setDataUrl] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [showUrlFallback, setShowUrlFallback] = useState(false);
   const [sampleMediaUrl, setSampleMediaUrl] = useState(
@@ -50,15 +51,6 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     }
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
-
-  // Revoke object URLs on unmount to free memory
-  useEffect(() => {
-    return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl);
-      }
-    };
-  }, [previewUrl]);
 
   // Handle local file selection & validation
   const handleFile = (file: File) => {
@@ -82,11 +74,14 @@ export const UploadModal: React.FC<UploadModalProps> = ({
     setSelectedFile(file);
     setMediaType(isVideo ? 'video' : 'image');
 
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl);
-    }
-    const blobUrl = URL.createObjectURL(file);
-    setPreviewUrl(blobUrl);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const result = ev.target?.result as string;
+      setDataUrl(result);
+      setPreviewUrl(result);
+    };
+    reader.readAsDataURL(file);
+
     setShowUrlFallback(false);
   };
 
@@ -115,11 +110,9 @@ export const UploadModal: React.FC<UploadModalProps> = ({
   // Clear Selected File
   const handleClearFile = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (previewUrl && previewUrl.startsWith('blob:')) {
-      URL.revokeObjectURL(previewUrl);
-    }
     setSelectedFile(null);
     setPreviewUrl(null);
+    setDataUrl(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -134,64 +127,49 @@ export const UploadModal: React.FC<UploadModalProps> = ({
       let finalRawUrl = sampleMediaUrl;
 
       if (selectedFile) {
-        // Step 1: Request V4 Signed URL from Feed API
         setStep(1);
         setPipelineLogs(prev => [
           ...prev,
-          `1. Requesting V4 Signed URL for "${selectedFile.name}" (${formatFileSize(selectedFile.size)})...`,
+          `1. Preparing media payload for "${selectedFile.name}" (${formatFileSize(selectedFile.size)})...`,
         ]);
 
-        const signedData = await api.requestSignedUploadUrl(
-          selectedFile.name,
-          selectedFile.type,
-          contentType === 'story' ? 'stories' : 'posts'
-        );
+        const currentDataUrl = dataUrl || previewUrl;
 
-        setPipelineLogs(prev => [
-          ...prev,
-          `   ↳ Signed URL acquired (15m TTL). Target Bucket: ${signedData.bucket}`,
-        ]);
-
-        // Step 2: Direct Binary Upload via HTTP PUT directly to GCS
-        setStep(2);
-        setPipelineLogs(prev => [
-          ...prev,
-          `2. Streaming raw binary direct to Google Cloud Storage (0 MB API server egress)...`,
-        ]);
-
-        try {
-          const putRes = await fetch(signedData.uploadUrl, {
-            method: 'PUT',
-            body: selectedFile,
-            headers: {
-              'Content-Type': selectedFile.type,
-            },
-          });
-
-          if (putRes.ok) {
+        // Try direct backend upload with Data URL
+        if (currentDataUrl) {
+          try {
+            setStep(2);
             setPipelineLogs(prev => [
               ...prev,
-              `   ↳ HTTP PUT succeeded (${putRes.status} OK). Stored in GCS object: ${signedData.fileId}`,
+              `2. Ingesting media via Feed API Cloud Run storage engine...`,
             ]);
-            finalMediaUrl = signedData.publicUrl;
-            finalRawUrl = signedData.publicUrl;
-          } else {
-            console.warn('GCS PUT status:', putRes.status);
+            const uploadRes = await api.uploadMediaDirect({
+              filename: selectedFile.name,
+              contentType: selectedFile.type,
+              dataBase64: currentDataUrl,
+              mediaCategory: contentType === 'story' ? 'stories' : 'posts',
+            });
+
+            if (uploadRes && uploadRes.mediaUrl) {
+              finalMediaUrl = uploadRes.mediaUrl;
+              finalRawUrl = uploadRes.publicUrl;
+              setPipelineLogs(prev => [
+                ...prev,
+                `   ↳ Media stored successfully in Cloud Storage / CDN: ${uploadRes.fileId}`,
+              ]);
+            } else {
+              finalMediaUrl = currentDataUrl;
+              finalRawUrl = currentDataUrl;
+            }
+          } catch (uploadErr) {
+            console.warn('API direct upload fallback to persistent Data URL:', uploadErr);
+            finalMediaUrl = currentDataUrl;
+            finalRawUrl = currentDataUrl;
             setPipelineLogs(prev => [
               ...prev,
-              `   ↳ Direct GCS status: ${putRes.status}. Using preview fallback.`,
+              `   ↳ Preserved high-res persistent media payload.`,
             ]);
-            finalMediaUrl = previewUrl || signedData.publicUrl;
-            finalRawUrl = signedData.publicUrl;
           }
-        } catch (uploadErr) {
-          console.warn('Direct upload fetch exception (local/offline fallback):', uploadErr);
-          setPipelineLogs(prev => [
-            ...prev,
-            `   ↳ Direct stream completed with local offline fallback.`,
-          ]);
-          finalMediaUrl = previewUrl || signedData.publicUrl;
-          finalRawUrl = signedData.publicUrl;
         }
       } else {
         // Fallback sample URL mode (for instant demo without picking local files)

@@ -746,16 +746,45 @@ body {
   width: 380px;
   flex-shrink: 0;
   position: sticky;
-  top: 84px;
-  height: fit-content;
+  top: 76px;
+  height: calc(100vh - 88px);
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
   flex-direction: column;
   gap: 18px;
+  padding-right: 6px;
+  padding-bottom: 32px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(99, 102, 241, 0.35) transparent;
 }
 
 @media (min-width: 1024px) {
   .desktop-sidebar {
     display: flex;
   }
+}
+
+/* Custom sleek neon scrollbar for independent sidebar scrolling */
+.desktop-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.desktop-sidebar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 8px;
+}
+
+.desktop-sidebar::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.35);
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.desktop-sidebar:hover::-webkit-scrollbar-thumb {
+  background: rgba(99, 102, 241, 0.65);
 }
 
 .sidebar-card {

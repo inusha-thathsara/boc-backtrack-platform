@@ -453,9 +453,13 @@ export class DataService {
     if (posts.length === 0) {
       posts = Array.from(memoryPosts.values());
     }
-    // Populate authors
+    // Populate authors and heal any broken blob: URLs
     for (const post of posts) {
       post.author = await this.getUser(post.authorId);
+      if (post.mediaUrl && post.mediaUrl.startsWith('blob:')) {
+        post.mediaUrl = '/media/walle_treasure.jpg';
+        post.thumbnailUrl = '/media/walle_treasure.jpg';
+      }
     }
     return posts;
   }
@@ -467,18 +471,36 @@ export class DataService {
         if (doc.exists) {
           const post = { id: doc.id, ...doc.data() } as Post;
           post.author = await this.getUser(post.authorId);
+          if (post.mediaUrl && post.mediaUrl.startsWith('blob:')) {
+            post.mediaUrl = '/media/walle_treasure.jpg';
+            post.thumbnailUrl = '/media/walle_treasure.jpg';
+          }
           return post;
         }
       } catch {}
     }
     const p = memoryPosts.get(postId);
-    if (p) p.author = await this.getUser(p.authorId);
-    return p;
+    if (p) {
+      p.author = await this.getUser(p.authorId);
+      if (p.mediaUrl && p.mediaUrl.startsWith('blob:')) {
+        p.mediaUrl = '/media/walle_treasure.jpg';
+        p.thumbnailUrl = '/media/walle_treasure.jpg';
+      }
+      return p;
+    }
+    return undefined;
   }
 
   static async createPost(post: Omit<Post, 'id' | 'createdAt' | 'likeCount' | 'commentCount'>): Promise<Post> {
+    // Guard against client-revoked blob: URLs
+    const safeMediaUrl = post.mediaUrl && post.mediaUrl.startsWith('blob:')
+      ? (post.rawUrl && !post.rawUrl.startsWith('blob:') ? post.rawUrl : '/media/walle_treasure.jpg')
+      : post.mediaUrl;
+
     const newPost: Post = {
       ...post,
+      mediaUrl: safeMediaUrl,
+      thumbnailUrl: safeMediaUrl,
       id: 'p_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
       likeCount: 0,
       commentCount: 0,

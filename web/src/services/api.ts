@@ -111,6 +111,20 @@ export const api = {
     return res.json();
   },
 
+  async uploadMediaDirect(payload: {
+    filename: string;
+    contentType: string;
+    dataBase64: string;
+    mediaCategory: 'posts' | 'stories';
+  }): Promise<{ status: string; mediaUrl: string; publicUrl: string; fileId: string }> {
+    const res = await fetch(`${API_BASE}/media/upload`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    return res.json();
+  },
+
   async createPost(payload: {
     authorId: string;
     caption: string;
