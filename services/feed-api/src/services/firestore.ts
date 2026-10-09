@@ -464,13 +464,38 @@ export class DataService {
     return comment;
   }
 
-  static async incrementLikes(postId: string, delta: number = 1): Promise<number> {
+  /**
+   * Directly mutates post likeCount in memory (used when incrementing without user tracking).
+   */
+  static applyLikeDelta(postId: string, delta: number): number {
     const post = memoryPosts.get(postId);
     if (post) {
       post.likeCount = Math.max(0, post.likeCount + delta);
       return post.likeCount;
     }
     return 0;
+  }
+
+  /**
+   * Persists accumulated like delta to persistent Firestore database.
+   * NOTE: In-memory post.likeCount is already updated during toggleUserLike/applyLikeDelta;
+   * this method syncs to remote Firestore without double-incrementing in-memory state.
+   */
+  static async incrementLikes(postId: string, delta: number = 1): Promise<number> {
+    if (db) {
+      try {
+        const postRef = db.collection('posts').doc(postId);
+        const doc = await postRef.get();
+        if (doc.exists) {
+          const current = doc.data()?.likeCount || 0;
+          await postRef.update({ likeCount: Math.max(0, current + delta) });
+        }
+      } catch (err) {
+        console.warn('Firestore like increment sync fallback:', err);
+      }
+    }
+    const post = memoryPosts.get(postId);
+    return post ? post.likeCount : 0;
   }
 
   static hasUserLiked(postId: string, userId: string): boolean {

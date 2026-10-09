@@ -98,15 +98,34 @@ async function runTests() {
     const feed = await fetchJson(`${API_BASE}/feed?viewerId=u1`);
     const targetPost = feed.feed[0];
     const initialLikes = targetPost.likeCount;
+    const testUserId = `test_probe_${Date.now()}`;
 
+    // 4.1 First Like: Must strictly increment by +1
     const likeRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-user-id': 'u1' },
-      body: JSON.stringify({ delta: 1 }),
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: 1, userId: testUserId }),
     });
 
-    assert(likeRes.likeCount === initialLikes + 1, `Atomic like incremented: ${initialLikes} -> ${likeRes.likeCount}`);
+    assert(likeRes.likeCount === initialLikes + 1, `Atomic like strictly incremented by +1: ${initialLikes} -> ${likeRes.likeCount}`);
+    assert(likeRes.liked === true, 'Response confirms post is marked as liked');
     assert(likeRes.mechanism.includes('Atomic Redis INCR'), `Counter mechanism confirmed: ${likeRes.mechanism}`);
+
+    // 4.2 Duplicate Like Attempt: Must be ignored (1 user can only like once)
+    const dupRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: 1, userId: testUserId }),
+    });
+    assert(dupRes.likeCount === initialLikes + 1 && dupRes.delta === 0, `Duplicate like rejected (Single-user restriction active, delta=0, count=${dupRes.likeCount})`);
+
+    // 4.3 Unlike: Must strictly decrement by -1 back to initial count
+    const unlikeRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: -1, userId: testUserId }),
+    });
+    assert(unlikeRes.likeCount === initialLikes && unlikeRes.liked === false, `Unlike strictly decremented by -1: ${initialLikes + 1} -> ${unlikeRes.likeCount} (Restored to baseline)`);
   } catch (err) {
     assert(false, `Atomic counter test failed: ${err.message}`);
   }

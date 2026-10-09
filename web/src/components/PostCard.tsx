@@ -6,7 +6,7 @@ import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, 
 interface PostCardProps {
   post: Post;
   currentUserId: string;
-  onLikeOptimistic: (postId: string, newCount: number) => void;
+  onLikeOptimistic: (postId: string, newCount: number, isLiked?: boolean) => void;
   isDevMode?: boolean;
 }
 
@@ -17,6 +17,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   isDevMode = false,
 }) => {
   const [isLiked, setIsLiked] = useState(Boolean(post.isLiked));
+  const [isLiking, setIsLiking] = useState(false);
   const [showRankingDetails, setShowRankingDetails] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<{ id: string; user?: any; content: string }[]>([]);
@@ -29,24 +30,29 @@ export const PostCard: React.FC<PostCardProps> = ({
   }, [post.id, post.isLiked, currentUserId]);
 
   const handleLike = async () => {
+    if (isLiking) return;
+    setIsLiking(true);
+
     const nextLiked = !isLiked;
     const delta = nextLiked ? 1 : -1;
     const nextCount = Math.max(0, post.likeCount + delta);
 
     setIsLiked(nextLiked);
-    onLikeOptimistic(post.id, nextCount);
+    onLikeOptimistic(post.id, nextCount, nextLiked);
 
     try {
       const res = await api.likePost(post.id, delta, currentUserId);
       if (res && typeof res.likeCount === 'number') {
         setIsLiked(res.liked);
-        onLikeOptimistic(post.id, res.likeCount);
+        onLikeOptimistic(post.id, res.likeCount, res.liked);
       }
     } catch (err) {
       console.error('Like failed:', err);
       // Revert on failure
       setIsLiked(!nextLiked);
-      onLikeOptimistic(post.id, post.likeCount);
+      onLikeOptimistic(post.id, post.likeCount, !nextLiked);
+    } finally {
+      setIsLiking(false);
     }
   };
 
@@ -145,7 +151,12 @@ export const PostCard: React.FC<PostCardProps> = ({
       {/* Action Row */}
       <div className="post-actions-row">
         <div className="post-actions-left">
-          <button className={`action-btn ${isLiked ? 'liked' : ''}`} onClick={handleLike}>
+          <button
+            className={`action-btn ${isLiked ? 'liked' : ''}`}
+            onClick={handleLike}
+            disabled={isLiking}
+            aria-label="Like post"
+          >
             <Heart size={22} fill={isLiked ? '#f43f5e' : 'none'} />
           </button>
           <button className="action-btn" onClick={toggleComments} title="View comments">

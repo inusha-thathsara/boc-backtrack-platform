@@ -99,15 +99,32 @@ async function runTests() {
     const feed = await fetchJson(`${API_BASE}/feed?viewerId=u1`);
     const targetPost = feed.feed[0];
     const initialLikes = targetPost.likeCount;
+    const testUserId = `test_probe_${Date.now()}`;
 
     const likeRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delta: 1 }),
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: 1, userId: testUserId }),
     });
 
-    assert(likeRes.likeCount === initialLikes + 1, `Atomic like count incremented: ${initialLikes} -> ${likeRes.likeCount}`);
+    assert(likeRes.likeCount === initialLikes + 1, `Atomic like count strictly incremented: ${initialLikes} -> ${likeRes.likeCount}`);
     assert(likeRes.mechanism.includes('Atomic Redis INCR'), 'Counter mechanism confirmed as Atomic Redis INCR');
+
+    // Duplicate like rejection
+    const dupRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: 1, userId: testUserId }),
+    });
+    assert(dupRes.likeCount === initialLikes + 1 && dupRes.delta === 0, `Duplicate like prevented (delta=0)`);
+
+    // Cleanup unlike
+    const unlikeRes = await fetchJson(`${API_BASE}/posts/${targetPost.id}/like`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-user-id': testUserId },
+      body: JSON.stringify({ delta: -1, userId: testUserId }),
+    });
+    assert(unlikeRes.likeCount === initialLikes, `Unlike restored count: ${initialLikes + 1} -> ${unlikeRes.likeCount}`);
   } catch (err) {
     assert(false, `Atomic counter test failed: ${err.message}`);
   }

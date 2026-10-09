@@ -51,6 +51,11 @@ class DistributedCounterService {
         }
 
         if (delta !== 0) {
+          const exists = await redis.exists(keyCounter);
+          if (!exists) {
+            const seed = DataService.getPostSync(postId)?.likeCount || 0;
+            await redis.set(keyCounter, seed);
+          }
           const updated = await redis.incrby(keyCounter, delta);
           this.trackDelta(postId, delta);
           DataService.toggleUserLike(postId, userId, delta);
@@ -86,8 +91,14 @@ class DistributedCounterService {
     if (redis) {
       try {
         const key = `post:${postId}:likes`;
+        const exists = await redis.exists(key);
+        if (!exists) {
+          const seed = DataService.getPostSync(postId)?.likeCount || 0;
+          await redis.set(key, seed);
+        }
         const updated = await redis.incrby(key, delta);
         this.trackDelta(postId, delta);
+        DataService.applyLikeDelta(postId, delta);
         return updated;
       } catch (err) {
         console.warn('Redis incr failed, using local delta:', err);
@@ -95,7 +106,7 @@ class DistributedCounterService {
     }
 
     this.trackDelta(postId, delta);
-    return DataService.incrementLikes(postId, delta);
+    return DataService.applyLikeDelta(postId, delta);
   }
 
   private trackDelta(postId: string, delta: number) {

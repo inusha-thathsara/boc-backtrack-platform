@@ -108,8 +108,14 @@ export function App() {
     loadData(user.id);
   };
 
-  const handleLikeOptimistic = (postId: string, newCount: number) => {
-    setFeed(prev => prev.map(p => (p.id === postId ? { ...p, likeCount: newCount } : p)));
+  const handleLikeOptimistic = (postId: string, newCount: number, isLiked?: boolean) => {
+    setFeed(prev =>
+      prev.map(p =>
+        p.id === postId
+          ? { ...p, likeCount: newCount, ...(isLiked !== undefined ? { isLiked } : {}) }
+          : p
+      )
+    );
     socket.broadcastLike(postId, newCount);
   };
 
