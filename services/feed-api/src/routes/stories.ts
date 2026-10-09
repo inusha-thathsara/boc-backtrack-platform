@@ -28,9 +28,23 @@ storiesRouter.get('/', async (req: Request, res: Response): Promise<void> => {
       });
     }
 
+    const viewerId = (req.query.viewerId as string) || 'u1';
+    const viewer = await DataService.getUser(viewerId);
+    const following = viewer?.following || [];
+
+    const sortedCreators = Array.from(groupedStories.values()).sort((a, b) => {
+      if (a.user.id === viewerId) return -1;
+      if (b.user.id === viewerId) return 1;
+      const aFollowing = following.includes(a.user.id);
+      const bFollowing = following.includes(b.user.id);
+      if (aFollowing && !bFollowing) return -1;
+      if (!aFollowing && bFollowing) return 1;
+      return 0;
+    });
+
     res.json({
       activeStoriesCount: stories.length,
-      creatorsWithStories: Array.from(groupedStories.values()),
+      creatorsWithStories: sortedCreators,
     });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

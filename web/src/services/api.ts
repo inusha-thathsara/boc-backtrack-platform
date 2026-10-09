@@ -6,6 +6,9 @@ export interface User {
   followerCount: number;
   followingCount: number;
   isCelebrity: boolean;
+  bio?: string;
+  interests?: string[];
+  following?: string[];
 }
 
 export interface RankingFactors {
@@ -14,6 +17,10 @@ export interface RankingFactors {
   hoursElapsed: number;
   affinityBonus: number;
   finalScore: number;
+  personalizationReason?: string;
+  isOwnPost?: boolean;
+  isFollowing?: boolean;
+  interestMatch?: boolean;
 }
 
 export interface Post {
@@ -64,8 +71,8 @@ export const api = {
     return { feed: data.feed || [], formula: data.rankingFormula || '' };
   },
 
-  async getStories(): Promise<CreatorStoryGroup[]> {
-    const res = await fetch(`${API_BASE}/stories`);
+  async getStories(viewerId: string = 'u1'): Promise<CreatorStoryGroup[]> {
+    const res = await fetch(`${API_BASE}/stories?viewerId=${viewerId}`);
     const data = await res.json();
     return data.creatorsWithStories || [];
   },

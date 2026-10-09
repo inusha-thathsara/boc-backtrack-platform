@@ -10,18 +10,30 @@ export const feedRouter = Router();
 feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
   try {
     const viewerId = (req.query.viewerId as string) || 'u1';
+    const viewer = (await DataService.getUser(viewerId)) || {
+      id: viewerId,
+      username: 'user',
+      displayName: 'User',
+      avatarUrl: '',
+      followerCount: 0,
+      followingCount: 0,
+      isCelebrity: false,
+      interests: [],
+      following: [],
+    };
+
     const rawPosts = await DataService.getPosts();
 
     // Filter only READY posts (exclude those still being transcoded or flagged)
     const readyPosts = rawPosts.filter(p => p.status === 'READY');
 
-    // Run Algorithmic Heuristic Ranking Engine
-    const rankedPosts = FeedRankingEngine.rankPosts(readyPosts, viewerId);
+    // Run Algorithmic Heuristic Ranking Engine with viewer profile
+    const rankedPosts = FeedRankingEngine.rankPosts(readyPosts, viewer);
 
     res.json({
       viewerId,
       totalCount: rankedPosts.length,
-      rankingFormula: 'Score = ( (Likes * 1.0) + (Comments * 2.5) + AffinityBonus ) / ( (HoursElapsed + 2) ^ 1.5 )',
+      rankingFormula: 'Score = ( (Log10(Likes)*110 + Log10(Comments)*70) + AffinityBonus ) / ( (HoursElapsed + 2) ^ 1.2 )',
       feed: rankedPosts,
     });
   } catch (error: any) {

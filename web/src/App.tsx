@@ -48,7 +48,7 @@ export function App() {
     try {
       const [fetchedUsers, fetchedStories, feedData] = await Promise.all([
         api.getUsers(),
-        api.getStories(),
+        api.getStories(viewerId),
         api.getFeed(viewerId),
       ]);
 
@@ -58,6 +58,9 @@ export function App() {
 
       if (!currentUser && fetchedUsers.length > 0) {
         setCurrentUser(fetchedUsers[0]);
+      } else if (currentUser) {
+        const updatedSelf = fetchedUsers.find(u => u.id === currentUser.id);
+        if (updatedSelf) setCurrentUser(updatedSelf);
       }
     } catch (err) {
       console.error('Failed to load platform data:', err);

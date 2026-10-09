@@ -8,6 +8,9 @@ export interface User {
   followerCount: number;
   followingCount: number;
   isCelebrity: boolean;
+  bio?: string;
+  interests?: string[];
+  following?: string[];
 }
 
 export interface Post {
@@ -59,6 +62,9 @@ const memoryUsers: Map<string, User> = new Map([
       followerCount: 14200,
       followingCount: 310,
       isCelebrity: false,
+      bio: 'Cloud Architect & DevOps • Google Cloud Run, Terraform & Kubernetes',
+      interests: ['#CloudRun', '#GCP', '#Terraform', '#DevOps', '#Kubernetes'],
+      following: ['u2', 'u3'],
     },
   ],
   [
@@ -71,6 +77,9 @@ const memoryUsers: Map<string, User> = new Map([
       followerCount: 9800,
       followingCount: 240,
       isCelebrity: false,
+      bio: 'Distributed Systems Engineer • Low-Latency Redis, WebSockets & Eventarc',
+      interests: ['#Redis', '#WebSockets', '#Architecture', '#Performance', '#Databases'],
+      following: ['u1', 'u3'],
     },
   ],
   [
@@ -83,6 +92,9 @@ const memoryUsers: Map<string, User> = new Map([
       followerCount: 850000,
       followingCount: 50,
       isCelebrity: true,
+      bio: 'Official BackTrack Social Platform • BOC 2.0 Scenario 2 Enterprise Edition',
+      interests: ['#BackTrack', '#BOC2', '#CloudRun', '#HLS', '#Community'],
+      following: ['u1', 'u2', 'u4'],
     },
   ],
   [
@@ -95,6 +107,9 @@ const memoryUsers: Map<string, User> = new Map([
       followerCount: 45000,
       followingCount: 420,
       isCelebrity: false,
+      bio: 'Visual Storyteller & Photographer • 4K Cinematic Video & Tokyo Street',
+      interests: ['#Photography', '#Cinematography', '#Visuals', '#Travel', '#Design'],
+      following: ['u3'],
     },
   ],
 ]);
@@ -105,7 +120,7 @@ const memoryPosts: Map<string, Post> = new Map([
     {
       id: 'p1',
       authorId: 'u3',
-      caption: 'Scaling to millions on Google Cloud Platform! Check out our decoupled HLS streaming pipeline 🚀 #BOC2 #CloudRun #GCP',
+      caption: 'Scaling to millions on Google Cloud Platform! Check out our decoupled HLS streaming pipeline 🚀 #BOC2 #CloudRun #GCP #BackTrack',
       mediaType: 'image',
       mediaUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1000',
       thumbnailUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400',
@@ -120,14 +135,14 @@ const memoryPosts: Map<string, Post> = new Map([
     {
       id: 'p2',
       authorId: 'u1',
-      caption: 'Live demo testing: Direct Cloud Storage signed URL uploads bypass API servers completely. Zero bottlenecks! ⚡',
+      caption: 'Live demo testing: Direct Cloud Storage signed URL uploads bypass API servers completely. Zero bottlenecks! ⚡ #CloudRun #DevOps #GCP',
       mediaType: 'video',
       mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
       hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       thumbnailUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400',
       status: 'READY',
-      likeCount: 890,
-      commentCount: 45,
+      likeCount: 1420,
+      commentCount: 88,
       createdAt: Date.now() - 1000 * 60 * 120, // 2 hours ago
     },
   ],
@@ -136,14 +151,75 @@ const memoryPosts: Map<string, Post> = new Map([
     {
       id: 'p3',
       authorId: 'u2',
-      caption: 'Distributed Redis counters flush atomic like increments in micro-batches every 5 seconds. No Firestore lock contention!',
+      caption: 'Distributed Redis counters flush atomic like increments in micro-batches every 5 seconds. No Firestore lock contention! #Redis #Architecture #Performance',
       mediaType: 'image',
       mediaUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=1000',
       thumbnailUrl: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=400',
       status: 'READY',
-      likeCount: 520,
-      commentCount: 28,
+      likeCount: 1150,
+      commentCount: 62,
       createdAt: Date.now() - 1000 * 60 * 300, // 5 hours ago
+    },
+  ],
+  [
+    'p4',
+    {
+      id: 'p4',
+      authorId: 'u4',
+      caption: 'Golden Hour in 4K: Exploring cinematic color grading and anamorphic lens flares on our coastal shoot 🌅✨ #Photography #Cinematography #Visuals',
+      mediaType: 'video',
+      mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
+      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600',
+      status: 'READY',
+      likeCount: 2840,
+      commentCount: 142,
+      createdAt: Date.now() - 1000 * 60 * 90, // 1.5 hours ago
+    },
+  ],
+  [
+    'p5',
+    {
+      id: 'p5',
+      authorId: 'u4',
+      caption: 'Night street photography in Shibuya: Neon reflections captured with high-speed prime 35mm f/1.4 📸 #Photography #Visuals #Travel',
+      mediaType: 'image',
+      mediaUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1000',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400',
+      status: 'READY',
+      likeCount: 3190,
+      commentCount: 178,
+      createdAt: Date.now() - 1000 * 60 * 240, // 4 hours ago
+    },
+  ],
+  [
+    'p6',
+    {
+      id: 'p6',
+      authorId: 'u1',
+      caption: 'Infrastructure as Code: Full Terraform blueprint deployed to GCP Always Free Tier with zero idle costs 🛡️ #Terraform #DevOps #CloudRun #GCP',
+      mediaType: 'image',
+      mediaUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1000',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400',
+      status: 'READY',
+      likeCount: 890,
+      commentCount: 54,
+      createdAt: Date.now() - 1000 * 60 * 360, // 6 hours ago
+    },
+  ],
+  [
+    'p7',
+    {
+      id: 'p7',
+      authorId: 'u2',
+      caption: 'Low-latency bidirectional WebSocket gateway with 30s heartbeats & pub/sub backplane benchmarks ⚡ #WebSockets #Performance #Backend',
+      mediaType: 'image',
+      mediaUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1000',
+      thumbnailUrl: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=400',
+      status: 'READY',
+      likeCount: 760,
+      commentCount: 41,
+      createdAt: Date.now() - 1000 * 60 * 420, // 7 hours ago
     },
   ],
 ]);
@@ -180,6 +256,17 @@ const memoryStories: Map<string, Story> = new Map([
       mediaType: 'image',
       createdAt: Date.now() - 1000 * 60 * 30, // 30 mins ago
       expiresAt: Date.now() + 1000 * 60 * 60 * 23.5,
+    },
+  ],
+  [
+    's4',
+    {
+      id: 's4',
+      authorId: 'u4',
+      mediaUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=800',
+      mediaType: 'image',
+      createdAt: Date.now() - 1000 * 60 * 40, // 40 mins ago
+      expiresAt: Date.now() + 1000 * 60 * 60 * 23.3,
     },
   ],
 ]);

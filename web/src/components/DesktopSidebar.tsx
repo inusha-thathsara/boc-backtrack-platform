@@ -86,8 +86,41 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
               )}
             </div>
             <span className="user-profile-handle">@{currentUser.username}</span>
+            {currentUser.bio && (
+              <p style={{ fontSize: '0.74rem', color: '#94a3b8', margin: '4px 0 0 0', lineHeight: 1.3 }}>
+                {currentUser.bio}
+              </p>
+            )}
           </div>
         </div>
+
+        {/* Personalized Topics */}
+        {currentUser.interests && currentUser.interests.length > 0 && (
+          <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+            <span style={{ fontSize: '0.68rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600 }}>
+              Tailored Feed Topics:
+            </span>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px', marginTop: '5px' }}>
+              {currentUser.interests.map(tag => (
+                <span
+                  key={tag}
+                  onClick={() => onTagClick(tag)}
+                  style={{
+                    fontSize: '0.7rem',
+                    background: 'rgba(99, 102, 241, 0.12)',
+                    color: '#818cf8',
+                    padding: '2px 8px',
+                    borderRadius: '8px',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Persona Switcher Chips */}
         <div className="persona-quick-switch">

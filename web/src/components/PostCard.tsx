@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Post, api } from '../services/api';
 import { VideoPlayer } from './VideoPlayer';
-import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 
 interface PostCardProps {
   post: Post;
@@ -48,7 +48,6 @@ export const PostCard: React.FC<PostCardProps> = ({
     e.preventDefault();
     if (!newComment.trim() || isSubmittingComment) return;
     setIsSubmittingComment(true);
-
     try {
       const added = await api.addComment(post.id, currentUserId, newComment.trim());
       setComments(prev => [...prev, added]);
@@ -89,12 +88,35 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         </div>
 
-        {/* Status Chip (Shown only during asynchronous video transcoding) */}
-        {post.status === 'PROCESSING' && (
-          <span style={{ fontSize: '0.7rem', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '10px' }}>
-            Transcoding...
-          </span>
-        )}
+        {/* Right side chips: Personalization Reason + Transcoding status */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          {post.rankingFactors?.personalizationReason && (
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.68rem',
+                fontWeight: 600,
+                color: '#c084fc',
+                background: 'rgba(192, 132, 252, 0.1)',
+                border: '1px solid rgba(192, 132, 252, 0.25)',
+                padding: '3px 9px',
+                borderRadius: '12px',
+              }}
+              title="Algorithmic Personalization Match"
+            >
+              <Sparkles size={11} color="#c084fc" />
+              {post.rankingFactors.personalizationReason}
+            </span>
+          )}
+
+          {post.status === 'PROCESSING' && (
+            <span style={{ fontSize: '0.7rem', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '10px' }}>
+              Transcoding...
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Media Frame */}
@@ -170,8 +192,13 @@ export const PostCard: React.FC<PostCardProps> = ({
                   <span>Age: {post.rankingFactors.hoursElapsed}h</span>
                   <span>Affinity: +{post.rankingFactors.affinityBonus}</span>
                 </div>
+                {post.rankingFactors.personalizationReason && (
+                  <div style={{ fontSize: '0.72rem', color: '#c084fc', marginTop: '4px', fontWeight: 600 }}>
+                    Signal: {post.rankingFactors.personalizationReason}
+                  </div>
+                )}
                 <p style={{ fontSize: '0.68rem', color: '#64748b', marginTop: '4px' }}>
-                  Formula: (Likes×1.0 + Comments×2.5 + Affinity) / (Age + 2)^1.5
+                  Formula: (Log10(Likes)*110 + Log10(Comments)*70 + Affinity) / (Age + 2)^1.2
                 </p>
               </div>
             )}
