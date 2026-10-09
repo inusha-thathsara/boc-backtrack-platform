@@ -54,17 +54,22 @@ postsRouter.post('/', async (req: Request, res: Response): Promise<void> => {
 });
 
 /**
- * Atomic Like counter increment using Redis Distributed Counter.
+ * Atomic Like counter increment using Redis Distributed Counter with single-user restriction.
  */
 postsRouter.post('/:id/like', async (req: Request, res: Response): Promise<void> => {
   try {
     const postId = req.params.id as string;
-    const delta = req.body.delta !== undefined ? req.body.delta : 1;
-    const newLikeCount = await counterService.incrementLike(postId, delta);
+    const userId = req.body.userId || req.user?.uid || (req.headers['x-user-id'] as string) || 'u1';
+    const requestedDelta = req.body.delta !== undefined ? req.body.delta : undefined;
+
+    const result = await counterService.toggleLike(postId, userId, requestedDelta);
 
     res.json({
       postId,
-      likeCount: newLikeCount,
+      userId,
+      liked: result.liked,
+      likeCount: result.likeCount,
+      delta: result.delta,
       mechanism: 'Atomic Redis INCR (Flushed to Firestore in micro-batches)',
     });
   } catch (error: any) {

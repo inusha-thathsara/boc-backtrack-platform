@@ -28,6 +28,7 @@ export interface Post {
   commentCount: number;
   createdAt: number;
   score?: number;
+  isLiked?: boolean;
 }
 
 export interface Story {
@@ -281,6 +282,17 @@ const memoryComments: Map<string, Comment[]> = new Map([
   ],
 ]);
 
+// Single-user like tracker (Maps postId -> Set of userIds who liked the post)
+const memoryPostLikes: Map<string, Set<string>> = new Map([
+  ['p1', new Set(['u2', 'u3'])],
+  ['p2', new Set(['u3'])],
+  ['p3', new Set(['u1'])],
+  ['p4', new Set(['u1', 'u3'])],
+  ['p5', new Set(['u2'])],
+  ['p6', new Set(['u3'])],
+  ['p7', new Set(['u1'])],
+]);
+
 export class DataService {
   static async getUsers(): Promise<User[]> {
     if (db) {
@@ -459,5 +471,69 @@ export class DataService {
       return post.likeCount;
     }
     return 0;
+  }
+
+  static hasUserLiked(postId: string, userId: string): boolean {
+    const set = memoryPostLikes.get(postId);
+    return set ? set.has(userId) : false;
+  }
+
+  static getPostSync(postId: string): Post | undefined {
+    return memoryPosts.get(postId);
+  }
+
+  static toggleUserLike(postId: string, userId: string, requestedDelta?: number): { liked: boolean; likeCount: number; delta: number } {
+    let set = memoryPostLikes.get(postId);
+    if (!set) {
+      set = new Set();
+      memoryPostLikes.set(postId, set);
+    }
+
+    const currentlyLiked = set.has(userId);
+    let delta = 0;
+    let nextLiked = currentlyLiked;
+
+    if (requestedDelta !== undefined) {
+      if (requestedDelta > 0 && !currentlyLiked) {
+        set.add(userId);
+        delta = 1;
+        nextLiked = true;
+      } else if (requestedDelta < 0 && currentlyLiked) {
+        set.delete(userId);
+        delta = -1;
+        nextLiked = false;
+      } else if (requestedDelta > 0 && currentlyLiked) {
+        // User already liked! Cannot like twice!
+        delta = 0;
+        nextLiked = true;
+      } else if (requestedDelta < 0 && !currentlyLiked) {
+        delta = 0;
+        nextLiked = false;
+      }
+    } else {
+      // Toggle
+      if (currentlyLiked) {
+        set.delete(userId);
+        delta = -1;
+        nextLiked = false;
+      } else {
+        set.add(userId);
+        delta = 1;
+        nextLiked = true;
+      }
+    }
+
+    const post = memoryPosts.get(postId);
+    let currentLikes = post ? post.likeCount : 0;
+    if (delta !== 0 && post) {
+      post.likeCount = Math.max(0, post.likeCount + delta);
+      currentLikes = post.likeCount;
+    }
+
+    return {
+      liked: nextLiked,
+      likeCount: currentLikes,
+      delta,
+    };
   }
 }

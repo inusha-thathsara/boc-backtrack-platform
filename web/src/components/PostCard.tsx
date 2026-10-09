@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Post, api } from '../services/api';
 import { VideoPlayer } from './VideoPlayer';
 import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
@@ -16,23 +16,37 @@ export const PostCard: React.FC<PostCardProps> = ({
   onLikeOptimistic,
   isDevMode = false,
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(Boolean(post.isLiked));
   const [showRankingDetails, setShowRankingDetails] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState<{ id: string; user?: any; content: string }[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
 
+  // Sync like state whenever post or active persona changes
+  useEffect(() => {
+    setIsLiked(Boolean(post.isLiked));
+  }, [post.id, post.isLiked, currentUserId]);
+
   const handleLike = async () => {
-    const delta = isLiked ? -1 : 1;
+    const nextLiked = !isLiked;
+    const delta = nextLiked ? 1 : -1;
     const nextCount = Math.max(0, post.likeCount + delta);
-    setIsLiked(!isLiked);
+
+    setIsLiked(nextLiked);
     onLikeOptimistic(post.id, nextCount);
 
     try {
-      await api.likePost(post.id, delta);
+      const res = await api.likePost(post.id, delta, currentUserId);
+      if (res && typeof res.likeCount === 'number') {
+        setIsLiked(res.liked);
+        onLikeOptimistic(post.id, res.likeCount);
+      }
     } catch (err) {
       console.error('Like failed:', err);
+      // Revert on failure
+      setIsLiked(!nextLiked);
+      onLikeOptimistic(post.id, post.likeCount);
     }
   };
 

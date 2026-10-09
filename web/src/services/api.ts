@@ -38,6 +38,7 @@ export interface Post {
   createdAt: number;
   score?: number;
   rankingFactors?: RankingFactors;
+  isLiked?: boolean;
 }
 
 export interface Story {
@@ -87,14 +88,18 @@ export const api = {
     return data.story;
   },
 
-  async likePost(postId: string, delta: number = 1): Promise<number> {
+  async likePost(postId: string, delta?: number, userId: string = 'u1'): Promise<{ liked: boolean; likeCount: number; delta?: number }> {
     const res = await fetch(`${API_BASE}/posts/${postId}/like`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delta }),
+      headers: { 'Content-Type': 'application/json', 'x-user-id': userId },
+      body: JSON.stringify({ delta, userId }),
     });
     const data = await res.json();
-    return data.likeCount;
+    return {
+      liked: Boolean(data.liked),
+      likeCount: typeof data.likeCount === 'number' ? data.likeCount : 0,
+      delta: data.delta,
+    };
   },
 
   async requestSignedUploadUrl(filename: string, contentType: string, mediaCategory: 'posts' | 'stories') {

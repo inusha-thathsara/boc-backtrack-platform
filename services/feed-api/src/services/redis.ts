@@ -11,14 +11,82 @@ class DistributedCounterService {
   }
 
   /**
+   * Toggle like for a single user per post (Single User Like Restriction).
+   * Ensures 1 user can only like once per post.
+   */
+  async toggleLike(
+    postId: string,
+    userId: string = 'u1',
+    requestedDelta?: number
+  ): Promise<{ liked: boolean; likeCount: number; delta: number }> {
+    const keySet = `post:${postId}:liked_users`;
+    const keyCounter = `post:${postId}:likes`;
+
+    if (redis) {
+      try {
+        const isMember = await redis.sismember(keySet, userId);
+        let delta = 0;
+        let nextLiked = Boolean(isMember);
+
+        if (requestedDelta !== undefined) {
+          if (requestedDelta > 0 && !isMember) {
+            await redis.sadd(keySet, userId);
+            delta = 1;
+            nextLiked = true;
+          } else if (requestedDelta < 0 && isMember) {
+            await redis.srem(keySet, userId);
+            delta = -1;
+            nextLiked = false;
+          }
+        } else {
+          if (isMember) {
+            await redis.srem(keySet, userId);
+            delta = -1;
+            nextLiked = false;
+          } else {
+            await redis.sadd(keySet, userId);
+            delta = 1;
+            nextLiked = true;
+          }
+        }
+
+        if (delta !== 0) {
+          const updated = await redis.incrby(keyCounter, delta);
+          this.trackDelta(postId, delta);
+          DataService.toggleUserLike(postId, userId, delta);
+          return { liked: nextLiked, likeCount: Math.max(0, updated), delta };
+        } else {
+          const currentCount = await redis.get(keyCounter);
+          return {
+            liked: nextLiked,
+            likeCount: currentCount ? parseInt(currentCount, 10) : (DataService.getPostSync(postId)?.likeCount || 0),
+            delta: 0,
+          };
+        }
+      } catch (err) {
+        console.warn('Redis like toggle fallback:', err);
+      }
+    }
+
+    const res = DataService.toggleUserLike(postId, userId, requestedDelta);
+    if (res.delta !== 0) {
+      this.trackDelta(postId, res.delta);
+    }
+    return res;
+  }
+
+  /**
    * Increment post likes atomically.
    */
-  async incrementLike(postId: string, delta: number = 1): Promise<number> {
+  async incrementLike(postId: string, delta: number = 1, userId?: string): Promise<number> {
+    if (userId) {
+      const res = await this.toggleLike(postId, userId, delta);
+      return res.likeCount;
+    }
     if (redis) {
       try {
         const key = `post:${postId}:likes`;
         const updated = await redis.incrby(key, delta);
-        // Track delta to sync with Firestore
         this.trackDelta(postId, delta);
         return updated;
       } catch (err) {

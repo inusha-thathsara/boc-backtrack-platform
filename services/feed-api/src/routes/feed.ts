@@ -30,6 +30,11 @@ feedRouter.get('/', async (req: Request, res: Response): Promise<void> => {
     // Run Algorithmic Heuristic Ranking Engine with viewer profile
     const rankedPosts = FeedRankingEngine.rankPosts(readyPosts, viewer);
 
+    // Attach user-specific like state for the active viewer
+    for (const p of rankedPosts) {
+      p.isLiked = DataService.hasUserLiked(p.id, viewerId);
+    }
+
     res.json({
       viewerId,
       totalCount: rankedPosts.length,
