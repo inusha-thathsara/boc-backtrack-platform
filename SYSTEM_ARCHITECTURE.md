@@ -153,7 +153,15 @@ Social networks typically experience a 100:1 or 1,000:1 read-to-write ratio. A s
   2. The service buffers like deltas and flushes them to Cloud Firestore in **5-second micro-batches**.
   3. A viral post receiving 5,000 likes in 5 seconds results in **1 single Firestore write operation** instead of 5,000 document lock contentions.
 
-#### C. Horizontal Scale-to-Zero Cloud Run Autoscaling
+#### C. Single User Like Restriction (1 Like Per User Per Post)
+* Implemented in [`DistributedCounterService`](file:///e:/Documents/Projects/BOC/services/feed-api/src/services/redis.ts) and [`DataService`](file:///e:/Documents/Projects/BOC/services/feed-api/src/services/firestore.ts):
+  1. Each post maintains a set of users who have liked it (`post:<id>:liked_users`).
+  2. When a user clicks the heart, the server checks if the user has already liked the post:
+     - **If not liked:** Increments the counter by +1 and records the user's like state (`liked = true`).
+     - **If already liked:** Subsequent duplicate like requests are restricted (`delta = 0`). Clicking the heart again unlikes the post (-1) and clears their like state (`liked = false`).
+  3. The feed endpoint automatically attaches `isLiked: true/false` customized for the active viewer, allowing each persona to maintain their own independent like state across the platform.
+
+#### D. Horizontal Scale-to-Zero Cloud Run Autoscaling
 * Cloud Run automatically provisions new container instances (scaling up to 10 instances) as concurrent HTTP read requests surge, and scales back down to zero when idle.
 
 ---
