@@ -29,6 +29,7 @@ export function App() {
   const [isDMsOpen, setIsDMsOpen] = useState(false);
   const [unreadDMs, setUnreadDMs] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
   const [isDevMode, setIsDevMode] = useState<boolean>(() => {
     return localStorage.getItem('backtrack_dev_mode') === 'true';
   });
@@ -110,6 +111,17 @@ export function App() {
     setIsUploadOpen(true);
   };
 
+  // Filter feed based on search query (search creators, hashtags, caption)
+  const filteredFeed = feed.filter(post => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    return (
+      post.caption?.toLowerCase().includes(q) ||
+      post.author?.username?.toLowerCase().includes(q) ||
+      post.author?.displayName?.toLowerCase().includes(q)
+    );
+  });
+
   if (!currentUser) {
     return (
       <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}>
@@ -136,6 +148,8 @@ export function App() {
         unreadCount={unreadDMs}
         isDevMode={isDevMode}
         onToggleDevMode={handleToggleDevMode}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
       />
 
       {/* Main Responsive Layout: Feed (Center) + Desktop Sidebar (Right) */}
@@ -156,7 +170,7 @@ export function App() {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Cloud size={14} color="#6366f1" />
                 <span style={{ color: '#cbd5e1' }}>
-                  <strong>GCP Cluster:</strong> Cloud Run • Memorystore • GCS Signed URLs
+                  <strong>Architecture Stack:</strong> Cloud Run • Memorystore • GCS Signed URLs
                 </span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
@@ -169,10 +183,17 @@ export function App() {
           {/* Posts Feed Header */}
           <div className="feed-section-header">
             <span className="feed-title-label">
-              {isDevMode ? 'ALGORITHMIC TIMELINE FEED' : 'FOR YOU'}
+              {searchQuery
+                ? `SEARCH RESULTS FOR "${searchQuery.toUpperCase()}"`
+                : isDevMode
+                ? 'ALGORITHMIC TIMELINE FEED'
+                : 'FOR YOU'}
             </span>
             <button
-              onClick={() => loadData(currentUser.id)}
+              onClick={() => {
+                setSearchQuery('');
+                loadData(currentUser.id);
+              }}
               className="feed-refresh-btn"
             >
               <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
@@ -182,15 +203,41 @@ export function App() {
 
           {/* Posts Feed */}
           <div className="posts-feed">
-            {feed.map(post => (
-              <PostCard
-                key={post.id}
-                post={post}
-                currentUserId={currentUser.id}
-                onLikeOptimistic={handleLikeOptimistic}
-                isDevMode={isDevMode}
-              />
-            ))}
+            {filteredFeed.length > 0 ? (
+              filteredFeed.map(post => (
+                <PostCard
+                  key={post.id}
+                  post={post}
+                  currentUserId={currentUser.id}
+                  onLikeOptimistic={handleLikeOptimistic}
+                  isDevMode={isDevMode}
+                />
+              ))
+            ) : (
+              <div style={{ padding: '48px 24px', textAlign: 'center', color: '#94a3b8' }}>
+                <p style={{ fontWeight: 700, fontSize: '1rem', color: '#f8fafc', marginBottom: '8px' }}>
+                  No posts matching "{searchQuery}"
+                </p>
+                <p style={{ fontSize: '0.82rem', color: '#64748b', marginBottom: '18px' }}>
+                  Try searching by creator name (inusha, madhura) or hashtags (#CloudRun, #HLS)
+                </p>
+                <button
+                  onClick={() => setSearchQuery('')}
+                  style={{
+                    background: 'rgba(99, 102, 241, 0.15)',
+                    border: '1px solid rgba(99, 102, 241, 0.35)',
+                    color: '#818cf8',
+                    padding: '6px 16px',
+                    borderRadius: '20px',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Clear Search Filter
+                </button>
+              </div>
+            )}
           </div>
         </div>
 

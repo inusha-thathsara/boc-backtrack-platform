@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../services/api';
-import { PlusSquare, Send, ChevronDown, SlidersHorizontal, Search, ShieldCheck } from 'lucide-react';
+import { PlusSquare, Send, ChevronDown, SlidersHorizontal, Search, X } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User;
@@ -11,6 +11,8 @@ interface NavbarProps {
   unreadCount: number;
   isDevMode: boolean;
   onToggleDevMode: () => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,6 +24,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   unreadCount,
   isDevMode,
   onToggleDevMode,
+  searchQuery,
+  onSearchChange,
 }) => {
   return (
     <header className="navbar">
@@ -37,26 +41,44 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="brand-title">BackTrack</span>
             <div className="brand-badges-row">
               <span className="brand-subtitle">
-                {isDevMode ? 'JUDGE INSPECTOR ACTIVE' : 'CLOUD PLATFORM'}
+                {isDevMode ? 'ALGORITHM INSPECTOR ON' : 'CLOUD SOCIAL PLATFORM'}
               </span>
               <span className="brand-chip-desktop">
-                <ShieldCheck size={11} color="#10b981" /> Free Tier ($0/mo)
+                Scenario 2 MVP
               </span>
             </div>
           </div>
         </div>
 
-        {/* Desktop Search Bar (Widescreen PC) */}
+        {/* Live Search & Discovery Bar (Filters Feed & Hashtags in Real-Time) */}
         <div className="navbar-search-bar">
           <Search size={15} className="search-icon" />
           <input
             type="text"
-            placeholder="Search creators, posts, #architecture..."
+            value={searchQuery}
+            onChange={e => onSearchChange(e.target.value)}
+            placeholder="Search creators, hashtags (#CloudRun, #HLS)..."
             className="search-input"
-            readOnly
-            onClick={() => alert('Search & Discovery: Powered by Google Cloud in Phase 2 roadmap!')}
           />
-          <span className="search-shortcut">Ctrl+K</span>
+          {searchQuery ? (
+            <button
+              onClick={() => onSearchChange('')}
+              style={{
+                position: 'absolute',
+                right: '12px',
+                background: 'none',
+                border: 'none',
+                color: '#94a3b8',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <X size={14} />
+            </button>
+          ) : (
+            <span className="search-shortcut">Search</span>
+          )}
         </div>
 
         {/* Action Controls */}
@@ -65,7 +87,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className="btn-create-post"
             onClick={onOpenUpload}
-            title="Upload Post or Ephemeral Story via Direct GCS Signed URL"
+            title="Upload Post or Ephemeral Story (Direct Signed URL)"
           >
             <PlusSquare size={17} />
             <span className="btn-create-label">Create</span>
@@ -75,11 +97,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className={`btn-dev-toggle ${isDevMode ? 'active' : ''}`}
             onClick={onToggleDevMode}
-            title={isDevMode ? 'Disable Algorithm Inspector' : 'Enable Judge / Developer Algorithm Inspector'}
+            title={isDevMode ? 'Hide Algorithmic Scores' : 'Inspect Algorithmic Rank Scores & Formula'}
           >
             <SlidersHorizontal size={16} />
             <span className="dev-toggle-label">
-              {isDevMode ? 'Inspector: ON' : 'Judge Mode'}
+              {isDevMode ? 'Inspector: ON' : 'Inspect Formula'}
             </span>
           </button>
 
@@ -87,7 +109,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className="btn-icon btn-dm-action"
             onClick={onOpenDMs}
-            title="Direct Messages (Real-Time Cloud Run WebSockets)"
+            title="Direct Messages (Real-Time WebSockets)"
           >
             <Send size={18} />
             {unreadCount > 0 && <span className="badge-unread">{unreadCount}</span>}
