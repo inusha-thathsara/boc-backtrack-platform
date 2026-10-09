@@ -30,34 +30,24 @@ export const Navbar: React.FC<NavbarProps> = ({
   return (
     <header className="navbar">
       <div className="navbar-inner">
-        {/* Brand Badge */}
+        {/* Brand Logo & Name */}
         <div className="brand-badge" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img
             src="/logo.png"
-            alt="Team BackTrack Logo"
+            alt="BackTrack Logo"
             className="brand-logo-img"
           />
-          <div className="brand-text-block">
-            <span className="brand-title">BackTrack</span>
-            <div className="brand-badges-row">
-              <span className="brand-subtitle">
-                {isDevMode ? 'ALGORITHM INSPECTOR ON' : 'CLOUD SOCIAL PLATFORM'}
-              </span>
-              <span className="brand-chip-desktop">
-                Scenario 2 MVP
-              </span>
-            </div>
-          </div>
+          <span className="brand-title">BackTrack</span>
         </div>
 
-        {/* Live Search & Discovery Bar (Filters Feed & Hashtags in Real-Time) */}
+        {/* Live Search & Discovery Bar (Search Creators, Hashtags, Posts) */}
         <div className="navbar-search-bar">
           <Search size={15} className="search-icon" />
           <input
             type="text"
             value={searchQuery}
             onChange={e => onSearchChange(e.target.value)}
-            placeholder="Search creators, hashtags (#CloudRun, #HLS)..."
+            placeholder="Search creators, posts, #hashtags..."
             className="search-input"
           />
           {searchQuery ? (
@@ -73,6 +63,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
               }}
+              title="Clear search"
             >
               <X size={14} />
             </button>
@@ -87,32 +78,34 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             className="btn-create-post"
             onClick={onOpenUpload}
-            title="Upload Post or Ephemeral Story (Direct Signed URL)"
+            title="Create new post or story"
           >
             <PlusSquare size={17} />
             <span className="btn-create-label">Create</span>
-          </button>
-
-          {/* Algorithm / Developer Inspector Toggle */}
-          <button
-            className={`btn-dev-toggle ${isDevMode ? 'active' : ''}`}
-            onClick={onToggleDevMode}
-            title={isDevMode ? 'Hide Algorithmic Scores' : 'Inspect Algorithmic Rank Scores & Formula'}
-          >
-            <SlidersHorizontal size={16} />
-            <span className="dev-toggle-label">
-              {isDevMode ? 'Inspector: ON' : 'Inspect Formula'}
-            </span>
           </button>
 
           {/* Direct Messages Action */}
           <button
             className="btn-icon btn-dm-action"
             onClick={onOpenDMs}
-            title="Direct Messages (Real-Time WebSockets)"
+            title="Direct Messages"
           >
             <Send size={18} />
             {unreadCount > 0 && <span className="badge-unread">{unreadCount}</span>}
+          </button>
+
+          {/* Discreet Algorithm Inspector Toggle (For Judge Scoring) */}
+          <button
+            className={`btn-icon ${isDevMode ? 'active' : ''}`}
+            onClick={onToggleDevMode}
+            title={isDevMode ? 'Hide algorithmic scores' : 'Inspect algorithmic ranking scores on posts'}
+            style={{
+              color: isDevMode ? '#818cf8' : 'var(--text-muted)',
+              background: isDevMode ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
+              borderColor: isDevMode ? 'rgba(99, 102, 241, 0.35)' : 'var(--border-subtle)',
+            }}
+          >
+            <SlidersHorizontal size={17} />
           </button>
 
           {/* User Persona Switcher Pill */}

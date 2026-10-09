@@ -5,7 +5,7 @@ import { Navbar } from './components/Navbar';
 import { StoriesTray } from './components/StoriesTray';
 import { PostCard } from './components/PostCard';
 import { DesktopSidebar } from './components/DesktopSidebar';
-import { Cloud, Radio, Activity, RefreshCw } from 'lucide-react';
+import { Activity, RefreshCw } from 'lucide-react';
 
 const StoryViewerModal = lazy(() =>
   import('./components/StoryViewerModal').then(m => ({ default: m.StoryViewerModal }))
@@ -164,30 +164,10 @@ export function App() {
             onAddStoryClick={handleAddStory}
           />
 
-          {/* Architecture System Telemetry Pill (Developer / Judge Mode Only) */}
-          {isDevMode && (
-            <div className="dev-telemetry-banner">
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Cloud size={14} color="#6366f1" />
-                <span style={{ color: '#cbd5e1' }}>
-                  <strong>Architecture Stack:</strong> Cloud Run • Memorystore • GCS Signed URLs
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
-                <Radio size={12} className="animate-pulse" />
-                <span>Redis WS Active</span>
-              </div>
-            </div>
-          )}
-
           {/* Posts Feed Header */}
           <div className="feed-section-header">
             <span className="feed-title-label">
-              {searchQuery
-                ? `SEARCH RESULTS FOR "${searchQuery.toUpperCase()}"`
-                : isDevMode
-                ? 'ALGORITHMIC TIMELINE FEED'
-                : 'FOR YOU'}
+              {searchQuery ? `SEARCH: "${searchQuery}"` : 'FOR YOU'}
             </span>
             <button
               onClick={() => {
@@ -246,8 +226,6 @@ export function App() {
           currentUser={currentUser}
           users={users}
           onSwitchUser={handleSwitchUser}
-          isDevMode={isDevMode}
-          onToggleDevMode={handleToggleDevMode}
           onOpenUpload={() => {
             setUploadInitialType('post');
             setIsUploadOpen(true);
@@ -257,6 +235,7 @@ export function App() {
             setUnreadDMs(0);
           }}
           unreadCount={unreadDMs}
+          onTagClick={tag => setSearchQuery(tag)}
         />
       </main>
 

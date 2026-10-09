@@ -89,15 +89,10 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         </div>
 
-        {/* Status Chip */}
-        {post.status === 'PROCESSING' ? (
+        {/* Status Chip (Shown only during asynchronous video transcoding) */}
+        {post.status === 'PROCESSING' && (
           <span style={{ fontSize: '0.7rem', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '10px' }}>
             Transcoding...
-          </span>
-        ) : (
-          <span style={{ fontSize: '0.68rem', color: '#10b981', display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10b981' }} />
-            Ready
           </span>
         )}
       </div>
