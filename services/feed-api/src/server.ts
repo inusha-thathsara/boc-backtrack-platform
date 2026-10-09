@@ -26,6 +26,7 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-user-id'],
 }));
 app.use(express.json({ limit: '1mb' }));
+app.use(express.static('public'));
 app.use(apiLimiter);
 
 // Structured Request Logging for Cloud Logging

@@ -59,10 +59,6 @@ export async function authenticateToken(req: Request, res: Response, next: NextF
       u3: 'backtrack.official',
       u4: 'alex.creator',
       u_walle: 'walle.solar',
-      u_eve: 'eve.probe',
-      u_mo: 'mo.cleaner',
-      u_captain: 'captain.mccrea',
-      u_bnl: 'bnl.corp',
     };
     req.user = {
       uid: devUserId,

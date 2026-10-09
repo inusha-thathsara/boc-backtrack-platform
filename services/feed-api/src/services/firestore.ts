@@ -65,7 +65,7 @@ const memoryUsers: Map<string, User> = new Map([
       isCelebrity: false,
       bio: 'Cloud Architect & DevOps • Google Cloud Run, Terraform & Kubernetes',
       interests: ['#CloudRun', '#GCP', '#Terraform', '#DevOps', '#Kubernetes'],
-      following: ['u2', 'u3'],
+      following: ['u2', 'u3', 'u_walle'],
     },
   ],
   [
@@ -95,7 +95,7 @@ const memoryUsers: Map<string, User> = new Map([
       isCelebrity: true,
       bio: 'Official BackTrack Social Platform • BOC 2.0 Scenario 2 Enterprise Edition',
       interests: ['#BackTrack', '#BOC2', '#CloudRun', '#HLS', '#Community'],
-      following: ['u1', 'u2', 'u4'],
+      following: ['u1', 'u2', 'u4', 'u_walle'],
     },
   ],
   [
@@ -118,74 +118,14 @@ const memoryUsers: Map<string, User> = new Map([
     {
       id: 'u_walle',
       username: 'walle.solar',
-      displayName: 'WALL-E (Earth Class)',
-      avatarUrl: 'https://images.unsplash.com/photo-1589254065878-42c9da997008?w=200',
-      followerCount: 94200,
-      followingCount: 4,
+      displayName: 'WALL-E (Waste Allocation Load Lifter)',
+      avatarUrl: '/media/walle_sun.jpg',
+      followerCount: 128400,
+      followingCount: 3,
       isCelebrity: true,
-      bio: 'Directive: Waste Allocation Load Lifter • Solar charged ☀️ • Custodian of Earth • Collector of vintage relics & rare sprouts 🌱',
-      interests: ['#PlantDiscovered', '#EarthCleanup', '#Directive', '#VintageRelics', '#EVE', '#WALL_E', '#Hope'],
-      following: ['u_eve', 'u_captain', 'u_mo', 'u3'],
-    },
-  ],
-  [
-    'u_eve',
-    {
-      id: 'u_eve',
-      username: 'eve.probe',
-      displayName: 'EVE (Vegetation Evaluator)',
-      avatarUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=200',
-      followerCount: 184500,
-      followingCount: 4,
-      isCelebrity: true,
-      bio: 'Extraterrestrial Vegetation Evaluator 🚀 • Axiom reconnaissance probe • Plasma cannon active • Directive priority 1: Biological Life 🌱',
-      interests: ['#PlantDiscovered', '#Axiom', '#DirectiveA113', '#Scanning', '#Robotics', '#EVE', '#EarthReturn'],
-      following: ['u_walle', 'u_captain', 'u_bnl', 'u1'],
-    },
-  ],
-  [
-    'u_mo',
-    {
-      id: 'u_mo',
-      username: 'mo.cleaner',
-      displayName: 'M-O (Microbe Obliterator)',
-      avatarUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=200',
-      followerCount: 52400,
-      followingCount: 2,
-      isCelebrity: false,
-      bio: 'Foreign Contaminant Alert! ⚠️ • Sanitizing Axiom transit corridors • Scrubbing dirt tracks to 0.00% residue 24/7 🧼',
-      interests: ['#ForeignContaminant', '#Sanitization', '#AxiomCleaning', '#Axiom', '#Diagnostics'],
-      following: ['u_walle', 'u_eve'],
-    },
-  ],
-  [
-    'u_captain',
-    {
-      id: 'u_captain',
-      username: 'captain.mccrea',
-      displayName: 'Captain B. McCrea',
-      avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200',
-      followerCount: 312000,
-      followingCount: 5,
-      isCelebrity: true,
-      bio: 'Commander of the Axiom Starliner 🛸 • "I don’t want to survive, I want to live!" • Manual steering engaged back to Earth 🌍',
-      interests: ['#EarthReturn', '#Axiom', '#Humanity', '#PlantLife', '#ManualSteering', '#PlantDiscovered'],
-      following: ['u_eve', 'u_walle', 'u_bnl', 'u3', 'u2'],
-    },
-  ],
-  [
-    'u_bnl',
-    {
-      id: 'u_bnl',
-      username: 'bnl.corp',
-      displayName: 'Buy n Large Global',
-      avatarUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200',
-      followerCount: 1250000,
-      followingCount: 0,
-      isCelebrity: true,
-      bio: 'Buy n Large: Everything you need to be happy! 🛍️ • Operating the Axiom Luxury Fleet & Automated Earth Services since 2105',
-      interests: ['#BuyNLarge', '#Axiom', '#DirectiveA113', '#Automation', '#Starliner', '#BnL'],
-      following: [],
+      bio: 'Solar charged custodian of Earth ☀️🌱 • Compacted waste cubes since 2105 • Collector of vintage treasures, cassette tapes & rare living sprouts',
+      interests: ['#PlantDiscovered', '#WALL_E', '#EarthCleanup', '#VintageRelics', '#SolarPower'],
+      following: ['u3', 'u1', 'u4'],
     },
   ],
 ]);
@@ -197,13 +137,29 @@ const memoryPosts: Map<string, Post> = new Map([
       id: 'p1',
       authorId: 'u3',
       caption: 'Scaling to millions on Google Cloud Platform! Check out our decoupled HLS streaming pipeline 🚀 #BOC2 #CloudRun #GCP #BackTrack',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1000',
+      mediaType: 'video',
+      mediaUrl: 'https://vjs.zencdn.net/v/oceans.mp4',
+      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
       thumbnailUrl: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400',
       status: 'READY',
       likeCount: 12450,
       commentCount: 412,
       createdAt: Date.now() - 1000 * 60 * 45, // 45 mins ago
+    },
+  ],
+  [
+    'p_walle_sprout',
+    {
+      id: 'p_walle_sprout',
+      authorId: 'u_walle',
+      caption: 'Directive paused... 🌱 Found a living, photosynthesizing sprout growing inside an old leather boot on Earth! 700 years of waste compacting, and life finds a way. Need to keep this safe from the dust storms! ☀️🤖 #PlantDiscovered #EarthCleanup #WALL_E #Directive #Hope',
+      mediaType: 'image',
+      mediaUrl: '/media/walle_treasure.jpg',
+      thumbnailUrl: '/media/walle_treasure.jpg',
+      status: 'READY',
+      likeCount: 48210,
+      commentCount: 1240,
+      createdAt: Date.now() - 1000 * 60 * 25, // 25 mins ago
     },
   ],
   [
@@ -213,13 +169,27 @@ const memoryPosts: Map<string, Post> = new Map([
       authorId: 'u1',
       caption: 'Live demo testing: Direct Cloud Storage signed URL uploads bypass API servers completely. Zero bottlenecks! ⚡ #CloudRun #DevOps #GCP',
       mediaType: 'video',
-      mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
-      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      mediaUrl: 'https://media.w3.org/2010/05/sintel/trailer.mp4',
       thumbnailUrl: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=400',
       status: 'READY',
       likeCount: 1420,
       commentCount: 88,
       createdAt: Date.now() - 1000 * 60 * 120, // 2 hours ago
+    },
+  ],
+  [
+    'p_walle_plant_video',
+    {
+      id: 'p_walle_plant_video',
+      authorId: 'u_walle',
+      caption: 'Time-lapse macro observation: The Earth sprout is unfolding new green leaves under the morning sun! 🌱☀️ Biological life returns after 7 centuries. 🤖✨ #PlantDiscovered #WALL_E #LifeFindsAWay #EarthRevival',
+      mediaType: 'video',
+      mediaUrl: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4',
+      thumbnailUrl: '/media/walle_treasure.jpg',
+      status: 'READY',
+      likeCount: 65400,
+      commentCount: 2180,
+      createdAt: Date.now() - 1000 * 60 * 60, // 1 hour ago
     },
   ],
   [
@@ -238,19 +208,48 @@ const memoryPosts: Map<string, Post> = new Map([
     },
   ],
   [
+    'p_walle_shiny',
+    {
+      id: 'p_walle_shiny',
+      authorId: 'u_walle',
+      caption: 'Oooh... Shiny! ✨ Inspecting an ancient brass Zippo lighter relic recovered from the sector 4 scrap heaps. The flame still sparks! Adding this to my transport truck collection next to the Rubik\'s cube. 🤖 #VintageRelics #EarthCleanup #WALL_E #Treasures',
+      mediaType: 'image',
+      mediaUrl: '/media/walle_shiny.jpg',
+      thumbnailUrl: '/media/walle_shiny.jpg',
+      status: 'READY',
+      likeCount: 38900,
+      commentCount: 890,
+      createdAt: Date.now() - 1000 * 60 * 180, // 3 hours ago
+    },
+  ],
+  [
     'p4',
     {
       id: 'p4',
       authorId: 'u4',
       caption: 'Golden Hour in 4K: Exploring cinematic color grading and anamorphic lens flares on our coastal shoot 🌅✨ #Photography #Cinematography #Visuals',
       mediaType: 'video',
-      mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
-      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+      mediaUrl: 'https://vjs.zencdn.net/v/oceans.mp4',
       thumbnailUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=600',
       status: 'READY',
       likeCount: 2840,
       commentCount: 142,
       createdAt: Date.now() - 1000 * 60 * 90, // 1.5 hours ago
+    },
+  ],
+  [
+    'p_walle_log',
+    {
+      id: 'p_walle_log',
+      authorId: 'u_walle',
+      caption: 'Discovered petrified timber branch on Earth 🪵 Sensors detect organic cellulose structure. Proof that ancient green forests once flourished across these plains. Documenting for planetary restoration! 🤖🌱 #EarthHistory #WALL_E #EarthCleanup #Archive',
+      mediaType: 'image',
+      mediaUrl: '/media/walle_log.jpg',
+      thumbnailUrl: '/media/walle_log.jpg',
+      status: 'READY',
+      likeCount: 31200,
+      commentCount: 645,
+      createdAt: Date.now() - 1000 * 60 * 220, // 3.6 hours ago
     },
   ],
   [
@@ -266,6 +265,21 @@ const memoryPosts: Map<string, Post> = new Map([
       likeCount: 3190,
       commentCount: 178,
       createdAt: Date.now() - 1000 * 60 * 240, // 4 hours ago
+    },
+  ],
+  [
+    'p_walle_solar',
+    {
+      id: 'p_walle_solar',
+      authorId: 'u_walle',
+      caption: 'Morning solar array deployment: Photovoltaic chest panels at 100% full capacity! ☀️🔋 Daily routine: compact 50,000 cubes, polish optical lenses, and keep the boot sprout safe. Earth is getting cleaner cube by cube! 🤖 #SolarPower #WALL_E #EarthCleanup #DailyRoutine',
+      mediaType: 'image',
+      mediaUrl: '/media/walle_sun.jpg',
+      thumbnailUrl: '/media/walle_sun.jpg',
+      status: 'READY',
+      likeCount: 52100,
+      commentCount: 1430,
+      createdAt: Date.now() - 1000 * 60 * 280, // 4.6 hours ago
     },
   ],
   [
@@ -298,98 +312,6 @@ const memoryPosts: Map<string, Post> = new Map([
       createdAt: Date.now() - 1000 * 60 * 420, // 7 hours ago
     },
   ],
-  [
-    'p_walle_plant',
-    {
-      id: 'p_walle_plant',
-      authorId: 'u_walle',
-      caption: 'Directive paused... 🌱 Found a living, photosynthesizing sprout growing inside an old leather boot on Earth! 700 years of waste compacting, and life finds a way. Need to keep this safe from the dust storms! ☀️🤖 #PlantDiscovered #EarthCleanup #WALL_E #Directive #Hope',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=1000',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400',
-      status: 'READY',
-      likeCount: 48210,
-      commentCount: 1240,
-      createdAt: Date.now() - 1000 * 60 * 25, // 25 mins ago
-    },
-  ],
-  [
-    'p_eve_scan',
-    {
-      id: 'p_eve_scan',
-      authorId: 'u_eve',
-      caption: 'DIRECTIVE EVALUATION: POSITIVE. 🚀 Scanning sector 4 surface... Bio-luminescent photosynthesizing organism confirmed. Plant specimen sealed in chest vault. Transmitting homing beacon to Axiom Starliner bridge. Prepare hyperjump! 🟢⚡ #PlantDiscovered #Directive #Axiom #EVE #Robotics',
-      mediaType: 'video',
-      mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4',
-      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=500',
-      status: 'READY',
-      likeCount: 34920,
-      commentCount: 912,
-      createdAt: Date.now() - 1000 * 60 * 50, // 50 mins ago
-    },
-  ],
-  [
-    'p_mo_clean',
-    {
-      id: 'p_mo_clean',
-      authorId: 'u_mo',
-      caption: 'FOREIGN CONTAMINANT LEVEL RED! 🚨⚠️ Someone with rusty tank treads tracked actual organic mud all over the pristine Axiom central transit tube! Commencing ultra-sonic scrub cycle. Scrubbers to maximum velocity! 🧼🧽 #ForeignContaminant #Sanitization #AxiomCleaning #MicrobeObliterator',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400',
-      status: 'READY',
-      likeCount: 19840,
-      commentCount: 685,
-      createdAt: Date.now() - 1000 * 60 * 85, // 85 mins ago
-    },
-  ],
-  [
-    'p_captain_earth',
-    {
-      id: 'p_captain_earth',
-      authorId: 'u_captain',
-      caption: '"I don\'t want to survive... I want to live!" 🌍 Starliner log: AUTO\'s classified Directive A-113 has been officially revoked. We have engaged manual helm steering! Plotting coordinates 00-Earth. Humanity is coming home to build, dance, and plant! 🚀🌱 #EarthReturn #Axiom #Humanity #PlantLife #ManualSteering',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1000',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=400',
-      status: 'READY',
-      likeCount: 76500,
-      commentCount: 3820,
-      createdAt: Date.now() - 1000 * 60 * 130, // 2.1 hours ago
-    },
-  ],
-  [
-    'p_bnl_promo',
-    {
-      id: 'p_bnl_promo',
-      authorId: 'u_bnl',
-      caption: 'Celebrate 700 years in orbit with Buy n Large! 🛍️✨ Experience automated all-day hoverchairs, panoramic zero-gravity lido pools, holographic shopping corridors, and the all-new Septuacentennial Cupcake-in-a-Cup! BnL: Everything you need to be happy! 🥤🧁 #BuyNLarge #Axiom #LuxuryStarliner #Automation #BnL',
-      mediaType: 'video',
-      mediaUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4',
-      hlsUrl: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=500',
-      status: 'READY',
-      likeCount: 88400,
-      commentCount: 2410,
-      createdAt: Date.now() - 1000 * 60 * 190, // 3.1 hours ago
-    },
-  ],
-  [
-    'p_walle_collection',
-    {
-      id: 'p_walle_collection',
-      authorId: 'u_walle',
-      caption: 'Sunset in the truck: Solar cells at 100% 🔋 Rewinding my favorite tape \'Hello, Dolly!\' with Hal the cockroach, admiring my Rubik\'s cube, and clicking open my vintage Zippo lighter. Another good day of sorting Earth. 📼✨ #VintageRelics #EarthCleanup #WALL_E #Nostalgia #SolarPower',
-      mediaType: 'image',
-      mediaUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1000',
-      thumbnailUrl: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400',
-      status: 'READY',
-      likeCount: 29300,
-      commentCount: 940,
-      createdAt: Date.now() - 1000 * 60 * 250, // 4.1 hours ago
-    },
-  ],
 ]);
 
 const memoryStories: Map<string, Story> = new Map([
@@ -398,43 +320,10 @@ const memoryStories: Map<string, Story> = new Map([
     {
       id: 's_walle',
       authorId: 'u_walle',
-      mediaUrl: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?w=800',
+      mediaUrl: '/media/walle_treasure.jpg',
       mediaType: 'image',
       createdAt: Date.now() - 1000 * 60 * 20, // 20 mins ago
       expiresAt: Date.now() + 1000 * 60 * 60 * 23.6,
-    },
-  ],
-  [
-    's_eve',
-    {
-      id: 's_eve',
-      authorId: 'u_eve',
-      mediaUrl: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800',
-      mediaType: 'image',
-      createdAt: Date.now() - 1000 * 60 * 45, // 45 mins ago
-      expiresAt: Date.now() + 1000 * 60 * 60 * 23.2,
-    },
-  ],
-  [
-    's_mo',
-    {
-      id: 's_mo',
-      authorId: 'u_mo',
-      mediaUrl: 'https://images.unsplash.com/photo-1563089145-599997674d42?w=800',
-      mediaType: 'image',
-      createdAt: Date.now() - 1000 * 60 * 65, // 65 mins ago
-      expiresAt: Date.now() + 1000 * 60 * 60 * 22.9,
-    },
-  ],
-  [
-    's_captain',
-    {
-      id: 's_captain',
-      authorId: 'u_captain',
-      mediaUrl: 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?w=800',
-      mediaType: 'image',
-      createdAt: Date.now() - 1000 * 60 * 95, // 95 mins ago
-      expiresAt: Date.now() + 1000 * 60 * 60 * 22.4,
     },
   ],
   [
@@ -492,27 +381,18 @@ const memoryComments: Map<string, Comment[]> = new Map([
     ],
   ],
   [
-    'p_walle_plant',
+    'p_walle_sprout',
     [
-      { id: 'cw1', postId: 'p_walle_plant', userId: 'u_eve', content: 'Directive confirmed! Stand by for bio-containment protocol! 🌱🚀', createdAt: Date.now() - 1000 * 60 * 20 },
-      { id: 'cw2', postId: 'p_walle_plant', userId: 'u_captain', content: 'Wait... that is actual dirt! It has nitrogen and potassium! Amazing!', createdAt: Date.now() - 1000 * 60 * 15 },
-      { id: 'cw3', postId: 'p_walle_plant', userId: 'u_mo', content: 'CONTAMINANT ALERT! 🚨 Do not bring that biological mud onto the Axiom corridor!!', createdAt: Date.now() - 1000 * 60 * 10 },
-      { id: 'cw4', postId: 'p_walle_plant', userId: 'u1', content: '700-year cold boot deployment succeeded. Earth recovery pipeline is ONLINE 🚀', createdAt: Date.now() - 1000 * 60 * 5 },
+      { id: 'cw1', postId: 'p_walle_sprout', userId: 'u1', content: '700-year cold boot deployment succeeded. Earth recovery pipeline is ONLINE 🚀🌱', createdAt: Date.now() - 1000 * 60 * 20 },
+      { id: 'cw2', postId: 'p_walle_sprout', userId: 'u3', content: 'Official BackTrack salute to WALL-E! Genuine organic plant confirmed 🌱', createdAt: Date.now() - 1000 * 60 * 15 },
+      { id: 'cw3', postId: 'p_walle_sprout', userId: 'u4', content: 'That lighting on the boot seedling is incredible. True art of resilience! 📸', createdAt: Date.now() - 1000 * 60 * 10 },
     ],
   ],
   [
-    'p_captain_earth',
+    'p_walle_plant_video',
     [
-      { id: 'cc1', postId: 'p_captain_earth', userId: 'u_walle', content: 'E-vaaa! 🤖🌱', createdAt: Date.now() - 1000 * 60 * 110 },
-      { id: 'cc2', postId: 'p_captain_earth', userId: 'u_bnl', content: 'Buy n Large official notice: Earth operations remain paused per Directive A-113. Please enjoy your complimentary beverage.', createdAt: Date.now() - 1000 * 60 * 90 },
-      { id: 'cc3', postId: 'p_captain_earth', userId: 'u_eve', content: 'Course plotted. Axiom hyperdrive calibrated for Earth reentry.', createdAt: Date.now() - 1000 * 60 * 70 },
-    ],
-  ],
-  [
-    'p_mo_clean',
-    [
-      { id: 'cm1', postId: 'p_mo_clean', userId: 'u_walle', content: 'WALL-E! (nervous wave) 🤖', createdAt: Date.now() - 1000 * 60 * 75 },
-      { id: 'cm2', postId: 'p_mo_clean', userId: 'u_mo', content: 'Stop rolling on the freshly sanitized deck! 🧽', createdAt: Date.now() - 1000 * 60 * 60 },
+      { id: 'cw4', postId: 'p_walle_plant_video', userId: 'u2', content: 'High-definition macro time-lapse. Life finds a way! 🌿', createdAt: Date.now() - 1000 * 60 * 45 },
+      { id: 'cw5', postId: 'p_walle_plant_video', userId: 'u1', content: 'Zero carbon footprint, 100% solar powered streaming ☀️', createdAt: Date.now() - 1000 * 60 * 30 },
     ],
   ],
 ]);
@@ -520,18 +400,17 @@ const memoryComments: Map<string, Comment[]> = new Map([
 // Single-user like tracker (Maps postId -> Set of userIds who liked the post)
 const memoryPostLikes: Map<string, Set<string>> = new Map([
   ['p1', new Set(['u2', 'u3'])],
+  ['p_walle_sprout', new Set(['u1', 'u2', 'u3', 'u4'])],
   ['p2', new Set(['u3'])],
+  ['p_walle_plant_video', new Set(['u1', 'u3'])],
   ['p3', new Set(['u1'])],
+  ['p_walle_shiny', new Set(['u4', 'u1'])],
   ['p4', new Set(['u1', 'u3'])],
+  ['p_walle_log', new Set(['u2'])],
   ['p5', new Set(['u2'])],
+  ['p_walle_solar', new Set(['u1', 'u3'])],
   ['p6', new Set(['u3'])],
   ['p7', new Set(['u1'])],
-  ['p_walle_plant', new Set(['u_eve', 'u_captain', 'u1', 'u2', 'u3'])],
-  ['p_eve_scan', new Set(['u_walle', 'u_captain', 'u3'])],
-  ['p_mo_clean', new Set(['u_captain', 'u2'])],
-  ['p_captain_earth', new Set(['u_walle', 'u_eve', 'u_mo', 'u1', 'u3'])],
-  ['p_bnl_promo', new Set(['u_captain'])],
-  ['p_walle_collection', new Set(['u_eve', 'u1'])],
 ]);
 
 export class DataService {

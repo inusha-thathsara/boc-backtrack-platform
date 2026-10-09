@@ -17,6 +17,7 @@ ENV PORT=8080
 COPY package*.json ./
 RUN npm ci --only=production && npm cache clean --force
 COPY --from=builder /app/dist ./dist
+COPY public/ ./public/
 
 # Run as non-root user for container security
 USER node

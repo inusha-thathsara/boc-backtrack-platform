@@ -55,12 +55,12 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
 
   const trendingTopics = [
     { tag: '#PlantDiscovered', count: '48.2k posts', category: 'WALL-E Discovery' },
-    { tag: '#EarthReturn', count: '76.5k posts', category: 'Axiom Starliner' },
-    { tag: '#DirectiveA113', count: '34.9k posts', category: 'Directive Protocol' },
-    { tag: '#ForeignContaminant', count: '19.8k posts', category: 'M-O Sanitization' },
-    { tag: '#BuyNLarge', count: '88.4k posts', category: 'BnL MegaCorp' },
-    { tag: '#CloudRun', count: '14.2k posts', category: 'Technology' },
+    { tag: '#EarthCleanup', count: '39.4k posts', category: 'Planetary Restoration' },
+    { tag: '#WALL_E', count: '52.1k posts', category: 'Robotics' },
+    { tag: '#CloudRun', count: '14.2k posts', category: 'Cloud Architecture' },
     { tag: '#BOC2', count: '28.5k posts', category: 'Competition' },
+    { tag: '#VintageRelics', count: '18.7k posts', category: 'Earth History' },
+    { tag: '#Photography', count: '32.1k posts', category: 'Visual Arts' },
   ];
 
   const suggestedUsers = users.filter(u => u.id !== currentUser.id);
