@@ -101,3 +101,27 @@ postsRouter.post('/:id/comment', async (req: Request, res: Response): Promise<vo
     res.status(500).json({ error: error.message });
   }
 });
+
+/**
+ * Delete a post (Restricted to post owner only).
+ */
+postsRouter.delete('/:id', async (req: Request, res: Response): Promise<void> => {
+  try {
+    const postId = req.params.id as string;
+    const userId = (req.headers['x-user-id'] as string) || req.user?.uid || (req.query.userId as string) || 'u1';
+
+    const result = await DataService.deletePost(postId, userId);
+    if (!result.success) {
+      const statusCode = result.error?.includes('Unauthorized') ? 403 : 404;
+      res.status(statusCode).json({ error: result.error });
+      return;
+    }
+
+    res.json({
+      message: 'Post deleted successfully',
+      postId,
+    });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+});

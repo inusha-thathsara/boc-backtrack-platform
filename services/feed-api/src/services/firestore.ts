@@ -1,4 +1,6 @@
 import { db } from '../config/gcp.js';
+import fs from 'fs';
+import path from 'path';
 
 export interface User {
   id: string;
@@ -593,6 +595,46 @@ export class DataService {
         await db.collection('posts').doc(postId).update(updateData);
       } catch {}
     }
+  }
+
+  static async deletePost(postId: string, userId: string): Promise<{ success: boolean; error?: string }> {
+    const post = await this.getPost(postId);
+    if (!post) {
+      return { success: false, error: 'Post not found' };
+    }
+
+    if (post.authorId !== userId) {
+      return { success: false, error: 'Unauthorized: You can only delete your own posts' };
+    }
+
+    // 1. Delete from Firestore if connected
+    if (db && firestoreAvailable) {
+      try {
+        await db.collection('posts').doc(postId).delete();
+      } catch (err: any) {
+        console.warn('Firestore delete failed:', err?.message || err);
+      }
+    }
+
+    // 2. Delete from in-memory stores
+    memoryPosts.delete(postId);
+    memoryPostLikes.delete(postId);
+    memoryComments.delete(postId);
+
+    // 3. Clean up local media upload file if present
+    if (post.mediaUrl && post.mediaUrl.includes('/media/uploads/')) {
+      try {
+        const filename = path.basename(post.mediaUrl);
+        const localPath = path.join(process.cwd(), 'public', 'media', 'uploads', filename);
+        if (fs.existsSync(localPath)) {
+          fs.unlinkSync(localPath);
+        }
+      } catch (e) {
+        console.warn('Failed to clean up local media file:', e);
+      }
+    }
+
+    return { success: true };
   }
 
   static async getActiveStories(): Promise<Story[]> {

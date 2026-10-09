@@ -180,4 +180,15 @@ export const api = {
     const data = await res.json();
     return data.comment;
   },
+
+  async deletePost(postId: string, userId: string = 'u1'): Promise<boolean> {
+    const res = await fetch(`${API_BASE}/posts/${postId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-user-id': userId,
+      },
+    });
+    return res.ok;
+  },
 };

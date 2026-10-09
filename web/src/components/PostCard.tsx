@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Post, api, resolveMediaUrl } from '../services/api';
 import { VideoPlayer } from './VideoPlayer';
-import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Send, Cpu, CheckCircle2, ChevronDown, ChevronUp, Sparkles, Trash2 } from 'lucide-react';
 
 interface PostCardProps {
   post: Post;
   currentUserId: string;
   onLikeOptimistic: (postId: string, newCount: number, isLiked?: boolean) => void;
+  onDeletePost?: (postId: string) => void;
   isDevMode?: boolean;
 }
 
@@ -14,6 +15,7 @@ export const PostCard: React.FC<PostCardProps> = ({
   post,
   currentUserId,
   onLikeOptimistic,
+  onDeletePost,
   isDevMode = false,
 }) => {
   const [isLiked, setIsLiked] = useState(Boolean(post.isLiked));
@@ -23,6 +25,22 @@ export const PostCard: React.FC<PostCardProps> = ({
   const [comments, setComments] = useState<{ id: string; user?: any; content: string }[]>([]);
   const [newComment, setNewComment] = useState('');
   const [isSubmittingComment, setIsSubmittingComment] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const isOwner = post.authorId === currentUserId;
+
+  const handleDelete = async () => {
+    if (window.confirm('Delete this post permanently? This action cannot be undone.')) {
+      setIsDeleting(true);
+      try {
+        onDeletePost?.(post.id);
+        await api.deletePost(post.id, currentUserId);
+      } catch (err) {
+        console.error('Failed to delete post:', err);
+      } finally {
+        setIsDeleting(false);
+      }
+    }
+  };
 
   // Sync like state whenever post or active persona changes
   useEffect(() => {
@@ -108,7 +126,7 @@ export const PostCard: React.FC<PostCardProps> = ({
           </div>
         </div>
 
-        {/* Right side chips: Personalization Reason + Transcoding status */}
+        {/* Right side chips: Personalization Reason + Transcoding status + Delete Button */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {post.rankingFactors?.personalizationReason && (
             <span
@@ -135,6 +153,32 @@ export const PostCard: React.FC<PostCardProps> = ({
             <span style={{ fontSize: '0.7rem', color: '#f59e0b', background: 'rgba(245,158,11,0.1)', padding: '2px 8px', borderRadius: '10px' }}>
               Transcoding...
             </span>
+          )}
+
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              title="Delete post permanently"
+              className="delete-post-btn"
+              style={{
+                background: 'rgba(239, 68, 68, 0.12)',
+                border: '1px solid rgba(239, 68, 68, 0.3)',
+                color: '#f87171',
+                borderRadius: '8px',
+                padding: '3px 8px',
+                cursor: isDeleting ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '0.68rem',
+                fontWeight: 600,
+                transition: 'all 0.15s ease',
+              }}
+            >
+              <Trash2 size={12} color="#f87171" />
+              <span>{isDeleting ? 'Deleting...' : 'Delete'}</span>
+            </button>
           )}
         </div>
       </div>

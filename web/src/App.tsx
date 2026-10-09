@@ -227,6 +227,7 @@ export function App() {
                   post={post}
                   currentUserId={currentUser.id}
                   onLikeOptimistic={handleLikeOptimistic}
+                  onDeletePost={(postId) => setFeed(prev => prev.filter(p => p.id !== postId))}
                   isDevMode={isDevMode}
                 />
               ))
