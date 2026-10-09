@@ -14,6 +14,9 @@ import { authRouter } from './routes/auth.js';
 
 const app = express();
 
+// Trust Cloud Run reverse proxy headers (X-Forwarded-For)
+app.set('trust proxy', 1);
+
 // Production Middleware Stack
 app.use(securityHeaders);
 app.use(compression());

@@ -7,7 +7,7 @@ import helmet from 'helmet';
  */
 export const apiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 120,
+  max: 1000, // Generous threshold for rich interactive demos, persona switching, and testing
   standardHeaders: true,
   legacyHeaders: false,
   message: {

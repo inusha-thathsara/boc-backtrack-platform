@@ -43,7 +43,7 @@ export function App() {
   };
 
   // Load initial data
-  const loadData = useCallback(async (viewerId: string) => {
+  const loadData = useCallback(async (viewerId: string = 'u1') => {
     setIsLoading(true);
     try {
       const [fetchedUsers, fetchedStories, feedData] = await Promise.all([
@@ -56,22 +56,26 @@ export function App() {
       setStoryGroups(fetchedStories);
       setFeed(feedData.feed);
 
-      if (!currentUser && fetchedUsers.length > 0) {
-        setCurrentUser(fetchedUsers[0]);
-      } else if (currentUser) {
-        const updatedSelf = fetchedUsers.find(u => u.id === currentUser.id);
-        if (updatedSelf) setCurrentUser(updatedSelf);
-      }
+      setCurrentUser(prev => {
+        if (!prev && fetchedUsers.length > 0) {
+          return fetchedUsers.find(u => u.id === viewerId) || fetchedUsers[0];
+        }
+        if (prev) {
+          const updatedSelf = fetchedUsers.find(u => u.id === prev.id);
+          return updatedSelf || prev;
+        }
+        return prev;
+      });
     } catch (err) {
       console.error('Failed to load platform data:', err);
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser]);
+  }, []);
 
   useEffect(() => {
-    loadData(currentUser?.id || 'u1');
-  }, [loadData, currentUser?.id]);
+    loadData('u1');
+  }, [loadData]);
 
   // Real-Time Socket Connection & Event Handling
   useEffect(() => {
