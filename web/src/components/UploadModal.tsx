@@ -274,7 +274,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
           <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
             <UploadCloud size={20} color="#818cf8" />
             <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
-              Direct Cloud Storage Ingestion
+              {contentType === 'story' ? 'Create Ephemeral Story' : 'Create New Post'}
             </h3>
           </div>
           <button onClick={onClose} className="btn-icon" style={{ width: 32, height: 32 }} title="Close">
@@ -363,11 +363,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                   Drag & drop real photo or video, or <strong>browse files</strong>
                 </p>
                 <p className="dropzone-sub-text">
-                  Uploads direct to Google Cloud Storage via cryptographic V4 Signed URLs
+                  Upload directly from your device (Photos & Videos)
                 </p>
               </div>
               <span className="dropzone-limits-tag">
-                Images up to 15MB • Videos up to 50MB (Free Tier Compliant)
+                Photos up to 15MB • Videos up to 50MB (Free Tier Compliant)
               </span>
             </div>
           ) : selectedFile ? (
@@ -462,7 +462,7 @@ export const UploadModal: React.FC<UploadModalProps> = ({
                 }}
               >
                 <LinkIcon size={12} />
-                Don't have a file on hand? Use demo sample URL instead
+                Or paste a web link instead
               </button>
             </div>
           )}
@@ -538,11 +538,11 @@ export const UploadModal: React.FC<UploadModalProps> = ({
             }}
           >
             {isSubmitting ? (
-              <span>Streaming Direct to GCS...</span>
+              <span>Uploading & Publishing...</span>
             ) : (
               <>
                 <CheckCircle size={16} />
-                Publish via Direct Signed URL
+                {contentType === 'story' ? 'Share Story' : 'Share Post'}
               </>
             )}
           </button>
