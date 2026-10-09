@@ -4,6 +4,7 @@ import { socket } from './services/socket';
 import { Navbar } from './components/Navbar';
 import { StoriesTray } from './components/StoriesTray';
 import { PostCard } from './components/PostCard';
+import { DesktopSidebar } from './components/DesktopSidebar';
 import { Cloud, Radio, Activity, RefreshCw } from 'lucide-react';
 
 const StoryViewerModal = lazy(() =>
@@ -118,13 +119,88 @@ export function App() {
   }
 
   return (
-    <div className="app-container">
-      <div className="main-feed-column">
-        {/* Navigation Bar */}
-        <Navbar
+    <div className="app-shell">
+      {/* Full-width Responsive Top Navigation Bar */}
+      <Navbar
+        currentUser={currentUser}
+        users={users}
+        onSwitchUser={handleSwitchUser}
+        onOpenUpload={() => {
+          setUploadInitialType('post');
+          setIsUploadOpen(true);
+        }}
+        onOpenDMs={() => {
+          setIsDMsOpen(true);
+          setUnreadDMs(0);
+        }}
+        unreadCount={unreadDMs}
+        isDevMode={isDevMode}
+        onToggleDevMode={handleToggleDevMode}
+      />
+
+      {/* Main Responsive Layout: Feed (Center) + Desktop Sidebar (Right) */}
+      <main className="app-main-layout">
+        {/* Center Feed Column */}
+        <div className="main-feed-column">
+          {/* Stories Tray with 24h Expiration */}
+          <StoriesTray
+            currentUser={currentUser}
+            storyGroups={storyGroups}
+            onSelectStoryGroup={group => setActiveStoryGroup(group)}
+            onAddStoryClick={handleAddStory}
+          />
+
+          {/* Architecture System Telemetry Pill (Developer / Judge Mode Only) */}
+          {isDevMode && (
+            <div className="dev-telemetry-banner">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Cloud size={14} color="#6366f1" />
+                <span style={{ color: '#cbd5e1' }}>
+                  <strong>GCP Cluster:</strong> Cloud Run • Memorystore • GCS Signed URLs
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
+                <Radio size={12} className="animate-pulse" />
+                <span>Redis WS Active</span>
+              </div>
+            </div>
+          )}
+
+          {/* Posts Feed Header */}
+          <div className="feed-section-header">
+            <span className="feed-title-label">
+              {isDevMode ? 'ALGORITHMIC TIMELINE FEED' : 'FOR YOU'}
+            </span>
+            <button
+              onClick={() => loadData(currentUser.id)}
+              className="feed-refresh-btn"
+            >
+              <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
+              <span>Refresh</span>
+            </button>
+          </div>
+
+          {/* Posts Feed */}
+          <div className="posts-feed">
+            {feed.map(post => (
+              <PostCard
+                key={post.id}
+                post={post}
+                currentUserId={currentUser.id}
+                onLikeOptimistic={handleLikeOptimistic}
+                isDevMode={isDevMode}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop Sidebar (Rendered on Widescreen PC >= 1024px) */}
+        <DesktopSidebar
           currentUser={currentUser}
           users={users}
           onSwitchUser={handleSwitchUser}
+          isDevMode={isDevMode}
+          onToggleDevMode={handleToggleDevMode}
           onOpenUpload={() => {
             setUploadInitialType('post');
             setIsUploadOpen(true);
@@ -134,82 +210,8 @@ export function App() {
             setUnreadDMs(0);
           }}
           unreadCount={unreadDMs}
-          isDevMode={isDevMode}
-          onToggleDevMode={handleToggleDevMode}
         />
-
-        {/* Stories Tray with 24h Expiration */}
-        <StoriesTray
-          currentUser={currentUser}
-          storyGroups={storyGroups}
-          onSelectStoryGroup={group => setActiveStoryGroup(group)}
-          onAddStoryClick={handleAddStory}
-        />
-
-        {/* Architecture System Telemetry Pill (Developer / Judge Mode Only) */}
-        {isDevMode && (
-          <div
-            style={{
-              margin: '10px 14px 4px',
-              padding: '8px 12px',
-              borderRadius: '12px',
-              background: 'rgba(99, 102, 241, 0.08)',
-              border: '1px solid rgba(99, 102, 241, 0.2)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              fontSize: '0.72rem',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Cloud size={14} color="#6366f1" />
-              <span style={{ color: '#cbd5e1' }}>
-                <strong>GCP Cluster:</strong> Cloud Run • Memorystore • GCS Signed URLs
-              </span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#10b981' }}>
-              <Radio size={12} className="animate-pulse" />
-              <span>Redis WS Active</span>
-            </div>
-          </div>
-        )}
-
-        {/* Posts Feed Header */}
-        <div style={{ padding: '8px 16px 4px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <span style={{ fontSize: '0.76rem', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.04em' }}>
-            {isDevMode ? 'ALGORITHMIC TIMELINE FEED' : 'FOR YOU'}
-          </span>
-          <button
-            onClick={() => loadData(currentUser.id)}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#818cf8',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '0.72rem',
-            }}
-          >
-            <RefreshCw size={12} className={isLoading ? 'animate-spin' : ''} />
-            Refresh
-          </button>
-        </div>
-
-        {/* Posts Feed */}
-        <div className="posts-feed">
-          {feed.map(post => (
-            <PostCard
-              key={post.id}
-              post={post}
-              currentUserId={currentUser.id}
-              onLikeOptimistic={handleLikeOptimistic}
-              isDevMode={isDevMode}
-            />
-          ))}
-        </div>
-      </div>
+      </main>
 
       {/* Modals rendered outside main-feed-column to escape containing blocks */}
       <Suspense fallback={null}>

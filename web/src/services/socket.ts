@@ -16,9 +16,10 @@ class SocketClient {
     if (this.isConnecting) return;
     this.isConnecting = true;
 
-    const wsUrl = window.location.hostname === 'localhost' 
+    const envWs = (import.meta as any).env?.VITE_WS_URL;
+    const wsUrl = envWs || (window.location.hostname === 'localhost' 
       ? 'ws://localhost:8081' 
-      : `wss://${window.location.host}/ws`;
+      : `wss://${window.location.host}/ws`);
 
     try {
       this.ws = new WebSocket(wsUrl);

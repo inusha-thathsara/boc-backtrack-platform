@@ -49,7 +49,7 @@ export interface CreatorStoryGroup {
   stories: Story[];
 }
 
-const API_BASE = '/api';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || '/api';
 
 export const api = {
   async getUsers(): Promise<User[]> {

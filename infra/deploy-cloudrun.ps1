@@ -19,7 +19,7 @@ gcloud run deploy feed-api `
     --project $ProjectId `
     --platform managed `
     --allow-unauthenticated `
-    --set-env-vars "GCP_PROJECT_ID=$ProjectId" `
+    --set-env-vars "GCP_PROJECT_ID=$ProjectId,RAW_MEDIA_BUCKET=boc-raw-media-$ProjectId,PROCESSED_MEDIA_BUCKET=boc-processed-media-$ProjectId,NODE_ENV=production,CORS_ORIGIN=*" `
     --min-instances 0 `
     --max-instances 10
 
@@ -32,7 +32,7 @@ gcloud run deploy websocket-gateway `
     --platform managed `
     --allow-unauthenticated `
     --session-affinity `
-    --set-env-vars "GCP_PROJECT_ID=$ProjectId" `
+    --set-env-vars "GCP_PROJECT_ID=$ProjectId,NODE_ENV=production" `
     --min-instances 0 `
     --max-instances 10
 
@@ -45,12 +45,24 @@ gcloud run deploy media-worker `
     --platform managed `
     --no-allow-unauthenticated `
     --service-account "media-worker-sa@$ProjectId.iam.gserviceaccount.com" `
-    --set-env-vars "GCP_PROJECT_ID=$ProjectId" `
+    --set-env-vars "GCP_PROJECT_ID=$ProjectId,RAW_MEDIA_BUCKET=boc-raw-media-$ProjectId,PROCESSED_MEDIA_BUCKET=boc-processed-media-$ProjectId,NODE_ENV=production" `
     --memory 2Gi `
     --cpu 2 `
     --timeout 900 `
     --min-instances 0 `
     --max-instances 5
 
-Write-Host ">>> All Cloud Run microservices successfully deployed!" -ForegroundColor Green
+# 4. Deploy Frontend Web App (React + Vite)
+Write-Host ">>> [4/4] Deploying backtrack-web to Cloud Run..." -ForegroundColor Yellow
+gcloud run deploy backtrack-web `
+    --source web `
+    --region $Region `
+    --project $ProjectId `
+    --platform managed `
+    --allow-unauthenticated `
+    --min-instances 0 `
+    --max-instances 10
+
+Write-Host ">>> All Cloud Run microservices & frontend successfully deployed!" -ForegroundColor Green
 gcloud run services list --project $ProjectId
+
