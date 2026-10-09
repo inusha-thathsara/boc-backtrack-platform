@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../services/api';
-import { PlusSquare, Send, ChevronDown, SlidersHorizontal, Search, X } from 'lucide-react';
+import { PlusSquare, Send, ChevronDown, Search, X, Code2 } from 'lucide-react';
 
 interface NavbarProps {
   currentUser: User;
@@ -94,18 +94,22 @@ export const Navbar: React.FC<NavbarProps> = ({
             {unreadCount > 0 && <span className="badge-unread">{unreadCount}</span>}
           </button>
 
-          {/* Discreet Algorithm Inspector Toggle (For Judge Scoring) */}
+          {/* Developer Features Toggle Button */}
           <button
-            className={`btn-icon ${isDevMode ? 'active' : ''}`}
+            id="btn-dev-toggle"
+            className={`btn-dev-toggle ${isDevMode ? 'active' : ''}`}
             onClick={onToggleDevMode}
-            title={isDevMode ? 'Hide algorithmic scores' : 'Inspect algorithmic ranking scores on posts'}
-            style={{
-              color: isDevMode ? '#818cf8' : 'var(--text-muted)',
-              background: isDevMode ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-              borderColor: isDevMode ? 'rgba(99, 102, 241, 0.35)' : 'var(--border-subtle)',
-            }}
+            title={
+              isDevMode
+                ? 'Developer Mode: ON (Click to hide architecture stats & debug metrics)'
+                : 'Developer Mode: OFF (Click to inspect cloud infrastructure & algorithm)'
+            }
           >
-            <SlidersHorizontal size={17} />
+            <Code2 size={16} className="dev-toggle-icon" />
+            <span className="dev-toggle-label">Developer</span>
+            <span className={`dev-status-pill ${isDevMode ? 'active' : ''}`}>
+              {isDevMode ? 'ON' : 'OFF'}
+            </span>
           </button>
 
           {/* User Persona Switcher Pill */}

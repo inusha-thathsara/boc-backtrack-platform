@@ -5,7 +5,7 @@ import { Navbar } from './components/Navbar';
 import { StoriesTray } from './components/StoriesTray';
 import { PostCard } from './components/PostCard';
 import { DesktopSidebar } from './components/DesktopSidebar';
-import { Activity, RefreshCw } from 'lucide-react';
+import { Activity, RefreshCw, Code2 } from 'lucide-react';
 
 const StoryViewerModal = lazy(() =>
   import('./components/StoryViewerModal').then(m => ({ default: m.StoryViewerModal }))
@@ -164,6 +164,30 @@ export function App() {
             onAddStoryClick={handleAddStory}
           />
 
+          {/* Mobile Developer Inspector Banner (Visible only when Dev Mode is toggled ON on small screens) */}
+          {isDevMode && (
+            <div className="mobile-dev-inspector-card">
+              <div className="mobile-dev-header">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Code2 size={15} color="#818cf8" />
+                  <strong>Cloud Architecture (Dev Mode)</strong>
+                </div>
+                <span className="live-region-badge">
+                  <span className="pulsing-green-dot" /> us-central1
+                </span>
+              </div>
+              <div className="mobile-dev-chips">
+                <span className="mobile-dev-chip">Cloud Run Microservices</span>
+                <span className="mobile-dev-chip">Redis Pub/Sub</span>
+                <span className="mobile-dev-chip">Firestore NoSQL</span>
+                <span className="mobile-dev-chip">Direct V4 Signed URLs</span>
+              </div>
+              <div className="mobile-dev-formula-note">
+                Live Algorithm Active: <code>(Likes × 0.4) + (Recency × 0.6)</code>
+              </div>
+            </div>
+          )}
+
           {/* Posts Feed Header */}
           <div className="feed-section-header">
             <span className="feed-title-label">
@@ -236,6 +260,8 @@ export function App() {
           }}
           unreadCount={unreadDMs}
           onTagClick={tag => setSearchQuery(tag)}
+          isDevMode={isDevMode}
+          onToggleDevMode={handleToggleDevMode}
         />
       </main>
 

@@ -7,6 +7,16 @@ import {
   TrendingUp,
   Users,
   Hash,
+  Cloud,
+  Radio,
+  Database,
+  Zap,
+  SlidersHorizontal,
+  Sparkles,
+  Flame,
+  Film,
+  Clock,
+  Shield,
 } from 'lucide-react';
 
 interface DesktopSidebarProps {
@@ -17,6 +27,8 @@ interface DesktopSidebarProps {
   onOpenDMs: () => void;
   unreadCount: number;
   onTagClick: (tag: string) => void;
+  isDevMode: boolean;
+  onToggleDevMode: () => void;
 }
 
 export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
@@ -27,6 +39,8 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
   onOpenDMs,
   unreadCount,
   onTagClick,
+  isDevMode,
+  onToggleDevMode,
 }) => {
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({
     u3: true,
@@ -97,6 +111,119 @@ export const DesktopSidebar: React.FC<DesktopSidebarProps> = ({
           </div>
         </div>
       </div>
+
+      {/* DEVELOPER FEATURES & INFRASTRUCTURE (Visible ONLY when Developer Mode is ON) */}
+      {isDevMode && (
+        <>
+          <div className="sidebar-card telemetry-card">
+            <div className="telemetry-header">
+              <div className="telemetry-title">
+                <Cloud size={16} color="#818cf8" />
+                <span>Cloud-Native Infrastructure</span>
+              </div>
+              <span className="live-region-badge">
+                <span className="pulsing-green-dot" /> us-central1
+              </span>
+            </div>
+
+            <div className="telemetry-grid">
+              <div className="telemetry-item">
+                <div className="item-label">
+                  <Radio size={13} color="#38bdf8" />
+                  <span>Cloud Run</span>
+                </div>
+                <span className="item-value">Decoupled Microservices</span>
+              </div>
+
+              <div className="telemetry-item">
+                <div className="item-label">
+                  <Radio size={13} color="#10b981" />
+                  <span>Redis Gateway</span>
+                </div>
+                <span className="item-value success">Pub/Sub Backplane</span>
+              </div>
+
+              <div className="telemetry-item">
+                <div className="item-label">
+                  <Database size={13} color="#a855f7" />
+                  <span>Firestore</span>
+                </div>
+                <span className="item-value">Document Store</span>
+              </div>
+
+              <div className="telemetry-item">
+                <div className="item-label">
+                  <Zap size={13} color="#f59e0b" />
+                  <span>Cloud Storage</span>
+                </div>
+                <span className="item-value">Direct V4 Signed URLs</span>
+              </div>
+            </div>
+
+            {/* Algorithm Inspector Summary */}
+            <div className="inspector-toggle-box">
+              <div className="inspector-text">
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                  <SlidersHorizontal size={14} color="#818cf8" />
+                  <strong>Algorithm Inspector</strong>
+                </div>
+                <span>Display live ranking score formula on posts</span>
+              </div>
+              <button
+                onClick={onToggleDevMode}
+                className="toggle-switch on"
+                title="Toggle Dev Mode (Click to turn off)"
+              >
+                <span className="toggle-thumb" />
+              </button>
+            </div>
+          </div>
+
+          <div className="sidebar-card architecture-highlights-card">
+            <div className="card-title-row">
+              <Sparkles size={15} color="#6366f1" />
+              <span className="card-title-text">Proposal Features Implemented</span>
+            </div>
+            <ul className="highlights-list">
+              <li>
+                <div className="feature-item-header">
+                  <Flame size={13} color="#f97316" />
+                  <strong>Personalized Feed:</strong>
+                </div>
+                <span>Transparent algorithmic score sorting by recency and viral engagement.</span>
+              </li>
+              <li>
+                <div className="feature-item-header">
+                  <Film size={13} color="#38bdf8" />
+                  <strong>Adaptive HLS Video:</strong>
+                </div>
+                <span>Multi-bitrate video streaming with low-latency playback.</span>
+              </li>
+              <li>
+                <div className="feature-item-header">
+                  <Zap size={13} color="#eab308" />
+                  <strong>Viral Likes Scaling:</strong>
+                </div>
+                <span>Atomic Redis counters absorb 10k+ likes/sec without database lock contention.</span>
+              </li>
+              <li>
+                <div className="feature-item-header">
+                  <Clock size={13} color="#ec4899" />
+                  <strong>24h Ephemeral Stories:</strong>
+                </div>
+                <span>Automated Cloud Storage object lifecycle expiration rules.</span>
+              </li>
+              <li>
+                <div className="feature-item-header">
+                  <Shield size={13} color="#10b981" />
+                  <strong>Content Moderation:</strong>
+                </div>
+                <span>Automated Cloud Vision SafeSearch AI image inspection.</span>
+              </li>
+            </ul>
+          </div>
+        </>
+      )}
 
       {/* 2. Suggested Creators to Follow */}
       <div className="sidebar-card suggested-creators-card">
