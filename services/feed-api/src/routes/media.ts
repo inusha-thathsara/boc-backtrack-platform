@@ -21,8 +21,13 @@ mediaRouter.post('/upload-url', async (req: Request, res: Response): Promise<voi
     let uploadUrl = '';
     let publicUrl = '';
 
+    const targetBucketName =
+      mediaCategory === 'stories' || (contentType && contentType.startsWith('image/'))
+        ? PROCESSED_BUCKET_NAME
+        : RAW_BUCKET_NAME;
+
     try {
-      const bucket = storage.bucket(RAW_BUCKET_NAME);
+      const bucket = storage.bucket(targetBucketName);
       const file = bucket.file(uniqueFileId);
 
       // Generate V4 Signed URL with 15-minute expiration (Least Privilege & Ephemeral Access)
@@ -34,7 +39,7 @@ mediaRouter.post('/upload-url', async (req: Request, res: Response): Promise<voi
       });
 
       uploadUrl = signedUrl;
-      publicUrl = `https://storage.googleapis.com/${PROCESSED_BUCKET_NAME}/${uniqueFileId}`;
+      publicUrl = `https://storage.googleapis.com/${targetBucketName}/${uniqueFileId}`;
     } catch (gcsErr) {
       console.warn('GCS Signed URL generation bypassed, providing direct upload fallback:', gcsErr);
       // Fallback direct mock URL for local testing
@@ -47,7 +52,7 @@ mediaRouter.post('/upload-url', async (req: Request, res: Response): Promise<voi
       uploadUrl,
       publicUrl,
       expiresInSeconds: 900,
-      bucket: RAW_BUCKET_NAME,
+      bucket: targetBucketName,
       strategy: 'Direct-to-Cloud-Storage (Signed URL)',
     });
   } catch (error: any) {
