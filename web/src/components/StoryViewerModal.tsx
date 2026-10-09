@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { CreatorStoryGroup } from '../services/api';
-import { X, Clock, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
+import { X, Clock, Flame, ChevronLeft, ChevronRight, Timer } from 'lucide-react';
 
 interface StoryViewerModalProps {
   group: CreatorStoryGroup;
   onClose: () => void;
+  isDevMode?: boolean;
 }
 
-export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClose }) => {
+export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClose, isDevMode = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -24,7 +25,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
     };
   }, []);
 
-  // Progress timer
+  // Slide Progress timer (~5 seconds per story slide)
   useEffect(() => {
     setProgress(0);
     const interval = setInterval(() => {
@@ -40,7 +41,7 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
             return 100;
           }
         }
-        return prev + 2; // ~5 seconds per story
+        return prev + 2; // ~5 seconds per story slide
       });
     }, 100);
 
@@ -63,6 +64,45 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentIndex, group.stories.length, onClose]);
 
+  // Live ticking 24-hour cloud expiration countdown (synced with server expiresAt)
+  const [timeLeft, setTimeLeft] = useState<{
+    hours: number;
+    minutes: number;
+    seconds: number;
+    formatted: string;
+    isExpired: boolean;
+  }>({ hours: 24, minutes: 0, seconds: 0, formatted: '24h 00m 00s', isExpired: false });
+
+  useEffect(() => {
+    const updateCountdown = () => {
+      if (!currentStory?.expiresAt) return;
+      const now = Date.now();
+      const diffMs = currentStory.expiresAt - now;
+
+      if (diffMs <= 0) {
+        setTimeLeft({ hours: 0, minutes: 0, seconds: 0, formatted: '00h 00m 00s (Expired)', isExpired: true });
+        return;
+      }
+
+      const totalSecs = Math.floor(diffMs / 1000);
+      const hours = Math.floor(totalSecs / 3600);
+      const minutes = Math.floor((totalSecs % 3600) / 60);
+      const seconds = totalSecs % 60;
+
+      setTimeLeft({
+        hours,
+        minutes,
+        seconds,
+        formatted: `${hours}h ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}s`,
+        isExpired: false,
+      });
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [currentStory?.expiresAt]);
+
   if (!currentStory) return null;
 
   const handleNext = () => {
@@ -76,6 +116,26 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
   const handlePrev = () => {
     if (currentIndex > 0) {
       setCurrentIndex(i => i - 1);
+    }
+  };
+
+  // Remaining slide playback seconds (counts down from 5s to 1s)
+  const slideSecondsLeft = Math.max(1, Math.ceil((100 - progress) / 20));
+
+  const formatPostedTime = (timestamp: number) => {
+    const diffMins = Math.floor((Date.now() - timestamp) / 60000);
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    return `${diffHours}h ago`;
+  };
+
+  const formatExactTime = (timestamp: number) => {
+    try {
+      const d = new Date(timestamp);
+      return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return '';
     }
   };
 
@@ -117,47 +177,53 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
           ))}
         </div>
 
-        {/* Top Header Information */}
+        {/* Top Header Information & Dual-Timer HUD */}
         <div className="story-viewer-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
             <img
               src={group.user.avatarUrl}
               alt={group.user.username}
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '50%',
-                border: '2px solid rgba(255, 255, 255, 0.9)',
-                objectFit: 'cover',
-              }}
+              className="story-viewer-avatar"
             />
-            <div>
-              <span style={{ fontWeight: 700, fontSize: '0.9rem', color: '#fff', display: 'block', textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-                {group.user.username}
-              </span>
-              <span
-                style={{
-                  fontSize: '0.72rem',
-                  color: 'rgba(255, 255, 255, 0.85)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  textShadow: '0 1px 3px rgba(0,0,0,0.8)',
-                }}
-              >
-                <Clock size={12} />
-                Expires in {currentStory.remainingHours ?? 24}h (24h GCS TTL)
-              </span>
+            <div style={{ minWidth: 0 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                <span className="story-viewer-username">
+                  {group.user.username}
+                </span>
+                <span className="story-slide-counter">
+                  {currentIndex + 1}/{group.stories.length}
+                </span>
+                <span className="story-posted-time">
+                  • {formatPostedTime(currentStory.createdAt)}
+                </span>
+              </div>
+
+              {/* Server-Backed Live Ticking 24h Expiration Timer */}
+              <div className="story-live-countdown-badge" title="Live 24h Ephemeral Countdown (Backed by Cloud Storage Object Lifecycle)">
+                <Clock size={12} className="pulse-clock" />
+                <span className="countdown-clock-text">
+                  Expires in <strong>{timeLeft.formatted}</strong>
+                </span>
+                <span className="countdown-pill-ttl">24h GCS TTL</span>
+              </div>
             </div>
           </div>
 
-          <button
-            onClick={onClose}
-            className="story-close-btn"
-            title="Close Story"
-          >
-            <X size={18} />
-          </button>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
+            {/* Live slide playback seconds remaining */}
+            <div className="story-slide-playback-pill" title="Current story slide duration (5s timer)">
+              <Timer size={12} color="#cbd5e1" />
+              <span className="playback-timer-value">{slideSecondsLeft}s</span>
+            </div>
+
+            <button
+              onClick={onClose}
+              className="story-close-btn"
+              title="Close Story (Esc)"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
 
         {/* Story Media Frame: Full Image Optimization */}
@@ -193,12 +259,23 @@ export const StoryViewerModal: React.FC<StoryViewerModalProps> = ({ group, onClo
           <div className="story-tap-zone-left" onClick={handlePrev} />
           <div className="story-tap-zone-right" onClick={handleNext} />
 
-          {/* Ephemeral Notice Banner */}
+          {/* Ephemeral Notice Banner with Exact Purge Timestamps */}
           <div className="story-ephemeral-banner">
-            <Flame size={15} color="#f97316" />
-            <span>
-              <strong>Ephemeral Story:</strong> Automated GCS lifecycle policy purges object in 24 hours.
-            </span>
+            <Flame size={15} color="#f97316" className="banner-flame-icon" />
+            <div className="story-ephemeral-details">
+              <span className="ephemeral-title-line">
+                <strong>Ephemeral Story (24h Lifecycle):</strong> Purges at{' '}
+                <strong>{formatExactTime(currentStory.expiresAt)}</strong> ({timeLeft.formatted} remaining).
+              </span>
+              <span className="ephemeral-desc-line">
+                Google Cloud Storage native lifecycle rule automatically purges object after 1 day.
+              </span>
+              {isDevMode && (
+                <div className="story-dev-meta">
+                  Server expiresAt: <code>{currentStory.expiresAt}</code> (UTC epoch ms) • GCS Prefix: <code>stories/</code>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

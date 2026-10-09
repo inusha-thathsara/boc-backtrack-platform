@@ -268,7 +268,11 @@ export function App() {
       {/* Modals rendered outside main-feed-column to escape containing blocks */}
       <Suspense fallback={null}>
         {activeStoryGroup && (
-          <StoryViewerModal group={activeStoryGroup} onClose={() => setActiveStoryGroup(null)} />
+          <StoryViewerModal
+            group={activeStoryGroup}
+            onClose={() => setActiveStoryGroup(null)}
+            isDevMode={isDevMode}
+          />
         )}
 
         {isUploadOpen && (
