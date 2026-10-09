@@ -155,8 +155,6 @@ export const PostCard: React.FC<PostCardProps> = ({
                 target.dataset.hasFailed = 'true';
                 if (post.thumbnailUrl && post.thumbnailUrl !== post.mediaUrl) {
                   target.src = resolveMediaUrl(post.thumbnailUrl);
-                } else {
-                  target.src = '/media/walle_treasure.jpg';
                 }
               }
             }}

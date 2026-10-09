@@ -36,4 +36,5 @@ export const uploadLimiter = rateLimit({
 export const securityHeaders = helmet({
   contentSecurityPolicy: false, // APIs return JSON, static assets served from CDN
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow cross-origin image embedding
 });

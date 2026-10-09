@@ -132,6 +132,21 @@ const memoryUsers: Map<string, User> = new Map([
 
 const memoryPosts: Map<string, Post> = new Map([
   [
+    'p_1791565627341_3nkgi',
+    {
+      id: 'p_1791565627341_3nkgi',
+      authorId: 'u1',
+      caption: 'Periodic Functions - Fourier Analysis',
+      mediaType: 'image',
+      mediaUrl: '/media/uploads/1791565626403_20260127_091652.jpg.jpeg',
+      thumbnailUrl: '/media/uploads/1791565626403_20260127_091652.jpg.jpeg',
+      status: 'READY',
+      likeCount: 0,
+      commentCount: 0,
+      createdAt: Date.now() - 1000 * 60 * 1, // 1 min ago
+    },
+  ],
+  [
     'p_inusha_coursework',
     {
       id: 'p_inusha_coursework',
@@ -143,7 +158,7 @@ const memoryPosts: Map<string, Post> = new Map([
       status: 'READY',
       likeCount: 0,
       commentCount: 0,
-      createdAt: Date.now() - 1000 * 60 * 2, // 2 mins ago
+      createdAt: Date.now() - 1000 * 60 * 10, // 10 mins ago
     },
   ],
   [
@@ -414,6 +429,7 @@ const memoryComments: Map<string, Comment[]> = new Map([
 
 // Single-user like tracker (Maps postId -> Set of userIds who liked the post)
 const memoryPostLikes: Map<string, Set<string>> = new Map([
+  ['p_1791565627341_3nkgi', new Set([])],
   ['p_inusha_coursework', new Set([])],
   ['p1', new Set(['u2', 'u3'])],
   ['p_walle_sprout', new Set(['u1', 'u2', 'u3', 'u4'])],

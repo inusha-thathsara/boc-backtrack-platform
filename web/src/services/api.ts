@@ -61,7 +61,16 @@ export const API_BASE = (import.meta as any).env?.VITE_API_BASE || '/api';
 
 export function resolveMediaUrl(url: string | undefined): string {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:')) {
+  if (url.startsWith('data:')) return url;
+
+  // In local development, route any Cloud Run uploads through local Vite proxy
+  if (!API_BASE.startsWith('https://')) {
+    if (url.includes('/media/uploads/')) {
+      return url.substring(url.indexOf('/media/uploads/'));
+    }
+  }
+
+  if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
   }
   if (url.startsWith('/media/uploads/')) {
