@@ -65,7 +65,7 @@ Every service, database query, and storage bucket has been tuned specifically to
 | **Memorystore & L4 LB** | Managed Redis & Global Load Balancer | *No Free Tier* (~$53/mo) | **Free-tier switches enabled**: In-memory pub/sub fallback & Cloud Run native HTTPS / Firebase edge caching |
 
 > 📊 **Looking for the commercial scale financial model?**  
-> For the complete mathematical breakdown of our commercial production estimates ($420 – $780/mo at 100k MAU) and FinOps architectural derivations, see **[`COST_ANALYSIS.md`](file:///e:/Documents/Projects/BOC/COST_ANALYSIS.md)**.
+> For the complete mathematical breakdown of our proposal estimates ($670 – $1,230/mo at 100k MAU) and FinOps architectural derivations, see **[`COST_ANALYSIS.md`](file:///e:/Documents/Projects/BOC/COST_ANALYSIS.md)**.
 
 ---
 
